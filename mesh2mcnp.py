@@ -695,35 +695,41 @@ def write_surface_and_data(group_upper_boundaries):
         print("m" + str(i) + "  " + str(i) + "000.22m  1.0", file=output_fh)
 
     # multigroup option
-    print("mgopt f "+str(groups),file=output_fh)
+    print("mgopt f " + str(groups), file=output_fh)
 
     # fmesh tally cards : option added nov.14.2012
-    if group_upper_boundaries is not None: # check if list is non-empty 
+    if group_upper_boundaries is not None:  # check if list is non-empty
         group_upper_boundaries.reverse()
 
     for i in range(maxgcm):
-        xmin_by_cm=globals()['cm_attributes']['xMinCm']
-        ymin_by_cm=globals()['cm_attributes']['yMinCm']
-        zmin_by_cm=globals()['cm_attributes']['zMinCm']
-        xmax_by_cm=globals()['cm_attributes']['xMaxCm']
-        ymax_by_cm=globals()['cm_attributes']['yMaxCm']
-        zmax_by_cm=globals()['cm_attributes']['zMaxCm']
-        ixfl_by_cm=globals()['cm_attributes']['ixfL']
-        jyfl_by_cm=globals()['cm_attributes']['jyfL']
-        kzfl_by_cm=globals()['cm_attributes']['kzfL']
+        xmin_by_cm = globals()['cm_attributes']['xMinCm']
+        ymin_by_cm = globals()['cm_attributes']['yMinCm']
+        zmin_by_cm = globals()['cm_attributes']['zMinCm']
+        xmax_by_cm = globals()['cm_attributes']['xMaxCm']
+        ymax_by_cm = globals()['cm_attributes']['yMaxCm']
+        zmax_by_cm = globals()['cm_attributes']['zMaxCm']
+        ixfl_by_cm = globals()['cm_attributes']['ixfL']
+        jyfl_by_cm = globals()['cm_attributes']['jyfL']
+        kzfl_by_cm = globals()['cm_attributes']['kzfL']
         # the actual printing for each fmesh
-        print("fmesh"+str(i+1)+"4:n  origin=",end="", file=output_fh)
+        print("fmesh" + str(i + 1)+"4:n  origin=", end="", file=output_fh)
         print(xmin_by_cm[i], ymin_by_cm[i], zmin_by_cm[i], file=output_fh)
-        print('     ', 'imesh=',xmax_by_cm[i], 'iints=',int(ixfl_by_cm[i]),file=output_fh)                             
-        print('     ', 'jmesh=',ymax_by_cm[i], 'jints=',int(jyfl_by_cm[i]),file=output_fh)                              
-        print('     ', 'kmesh=',zmax_by_cm[i], 'kints=',int(kzfl_by_cm[i]),file=output_fh)                        
+        print('     ', 'imesh=', xmax_by_cm[i],
+              'iints=', int(ixfl_by_cm[i]), file=output_fh)
+        print('     ', 'jmesh=', ymax_by_cm[i],
+              'jints=', int(jyfl_by_cm[i]), file=output_fh)
+        print('     ', 'kmesh=', zmax_by_cm[i],
+              'kints=', int(kzfl_by_cm[i]), file=output_fh)
 
         # the emesh card
         if not group_upper_boundaries:
-            print("      emesh=",end="",file=output_fh)
+            print("      emesh=", end="", file=output_fh)
             for i in range(groups):
-                print("? ", end="",file=output_fh)
-            print(" $ supply the", input_file.split('.')[0]+".grp file and the '?' will go away!",end="",file=output_fh)
+                print("? ", end="", file=output_fh)
+            print(" $ supply the",
+                  input_file.split('.')[0] +
+                  ".grp file and the '?' will go away!",
+                  end="", file=output_fh)
             print(file=output_fh)
         else:
             group_string="      emesh="
