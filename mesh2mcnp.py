@@ -732,61 +732,63 @@ def write_surface_and_data(group_upper_boundaries):
                   end="", file=output_fh)
             print(file=output_fh)
         else:
-            group_string="      emesh="
+            group_string = "      emesh="
             for i in range(groups):
-                group_string+=str(group_upper_boundaries[i])+" "
+                group_string += str(group_upper_boundaries[i]) + " "
 
-            print(textwrap.fill(group_string,width=80,subsequent_indent='            ')
-                 ,file=output_fh)
+            print(textwrap.fill(group_string, width=80,
+                  subsequent_indent='            '), file=output_fh)
 
-
-        eint_string="      eints="                        
+        eint_string = "      eints="
         for i in range(groups):
-            eint_string+="1 "
-        
-        print(textwrap.fill(eint_string,width=80,subsequent_indent='            ')
-                ,file=output_fh)
+            eint_string += "1 "
+
+        print(textwrap.fill(eint_string, width=80,
+              subsequent_indent='            '), file=output_fh)
 
     # f4 tally cards
-    for i in range(1,maxgcm+1):
-        index=i-1
-        print("c f"+str(i)+"4:n  ",end="",file=output_fh)
-        tally_string="( ("
-        for m in range(1,maxmat+1):
-            tally_string+=" "+str(m)
-        tally_string+=" ) < "
-        tally_string+=str(10000+i)+"[0:"+str(fm_attributes['xFm'][index]-1).ljust(4)+\
-                     "0:"+str(fm_attributes['yFm'][index]-1).ljust(4)+\
-                     "0:"+str(fm_attributes['zFm'][index]-1)+"] < "+\
-                     str(50000+i)+" )"
-        print(tally_string,file=output_fh)
+    for i in range(1, maxgcm+1):
+        index = i - 1
+        print("c f"+str(i)+"4:n  ", end="", file=output_fh)
+        tally_string = "( ("
+        for m in range(1, maxmat+1):
+            tally_string += " "+str(m)
+        tally_string += " ) < "
+        tally_string += str(10000 + i) + "[0:" + \
+            str(fm_attributes['xFm'][index] - 1).ljust(4) + \
+            "0:" + str(fm_attributes['yFm'][index] - 1).ljust(4) + \
+            "0:" + str(fm_attributes['zFm'][index]-1) + "] < " + \
+            str(50000 + i) + " )"
+        print(tally_string, file=output_fh)
+
 
 def insert_kcode():
-    print("c if kcode or kcode.txt file exists,"\
+    print("c if kcode or kcode.txt file exists,"
           " then its contents will be inserted here", file=output_fh)
 
     try:
         with open('kcode') as kfile:
             print("Appending contents of kcode...")
             for line in kfile:
-                print(line,end="",file=output_fh)
-    except IOError as e:
+                print(line, end="", file=output_fh)
+    except IOError as e:  # noqa
         print('no \'kcode\' file detected, trying \'kcode.txt\'')
         try:
             with open('kcode.txt') as kfile:
                 print("Appending contents of kcode.txt...")
                 for line in kfile:
-                    print(line,end="",file=output_fh)
-        except IOError as e2:
+                    print(line, end="", file=output_fh)
+        except IOError as e2:  # noqa
             print('')
+
 
 def insert_group_boundaries(file):
     """ if the prb.grp file exists, read in the group information """
 
-    group_upper_boundaries=[]
-    groups=instances["maxgrp"].value
-    file_str=file.split('.')
-    basename=file_str[0]
+    group_upper_boundaries = []
+    groups = instances["maxgrp"].value
+    file_str = file.split('.')
+    basename = file_str[0]
     try:
         with open(basename+'.grp') as gfile:
             print("Analyzing Group File for", groups, "groups...")
@@ -794,40 +796,41 @@ def insert_group_boundaries(file):
             next(gfile)
             next(gfile)
             next(gfile)
-            gcnt=0
+            gcnt = 0
             for line in gfile:
                 #DBG print(line,end="")
-                num,upperMeV_val=line.split()
+                num, upperMeV_val = line.split()
                 group_upper_boundaries.append(upperMeV_val)
-                gcnt+=1
-                if gcnt==groups: break
+                gcnt += 1
+                if gcnt == groups:
+                    break
 
-        line_count=len(open(basename+'.grp','r').readlines())    
-        print("Group(.grp) file has", line_count,"lines")
-    except IOError as e:
+        line_count = len(open(basename+'.grp', 'r').readlines())
+        print("Group(.grp) file has", line_count, "lines")
+    except IOError as e:  # noqa
         print("no grp file detected (optional)")
 
     return group_upper_boundaries
 
 # main script begin
 
-#lenArgv=len(sys.argv)                                                                      
-#if lenArgv == 1:                                                                           
-#        input_name=input("Enter PENTRAN file name: ")                                
-#else:                                                                                      
+#lenArgv=len(sys.argv)
+#if lenArgv == 1:
+#        input_name=input("Enter PENTRAN file name: ")
+#else:
 
-input_file=sys.argv[1]                                                                   
-print(sys.argv[1])                                                                 
+input_file = sys.argv[1]
+print(sys.argv[1])
 
 #input_file=input("Enter PENTRAN file name: ")
 #DBG input_file="uo2asm.pen"
-output_file=input_file.split('.')[0]+'.mc'
+output_file = input_file.split('.')[0]+'.mc'
 print("Assigning name of output as:", output_file)
 
 header()
 
 
-input_fh=open(input_file, 'r')
+input_fh = open(input_file, 'r')
 #reference_file=open('prb.ref','w')
 
 #GATHER INFORMATION
@@ -836,10 +839,10 @@ input_fh=open(input_file, 'r')
 for line in input_fh:
 
     # identify the maximum number of CM
-    cm_check(input_fh,line)
+    cm_check(input_fh, line)
 
     # identify the maximum number of grps, materials
-    grp_matl_check(input_fh,line)
+    grp_matl_check(input_fh, line)
 
     # examine BLOCK II section
     if "BLOCK II(geometry)" in line:
@@ -847,35 +850,34 @@ for line in input_fh:
         fido_per_cm = analyze_geometry_block(input_fh)
 
     # identify boundary conditions
-    bdy_check(input_fh,line)
+    bdy_check(input_fh, line)
 
 print("\nPENTRAN Instances Summary")
-print("-"*80,end="")
+print("-"*80, end="")
 pretty_print_instances(instances)
 print_fido_string(fido_per_cm)
 
 fm_attributes = calc_fm_per_cm()
 cm_attributes = \
     calc_boundary_per_cm(fm_attributes['xFm'],
-                      fm_attributes['yFm'],
-                      fm_attributes['zFm'])
+                         fm_attributes['yFm'],
+                         fm_attributes['zFm'])
 
 ### printing to output file
-output_fh=open(output_file,'w')
+output_fh = open(output_file, 'w')
 
 write_cell_card()
-fm_matl_per_cm=write_cell_lattice(instances["maxmat"].value,fido_per_cm)
+fm_matl_per_cm = write_cell_lattice(instances["maxmat"].value, fido_per_cm)
 
-group_upper_boundaries=insert_group_boundaries(input_file)
+group_upper_boundaries = insert_group_boundaries(input_file)
 write_surface_and_data(group_upper_boundaries)
 insert_kcode()
 
 print("\nPhysical Dimension Summary")
 print("-"*80)
-table_print('cm_attributes','xMinCm xMaxCm yMinCm yMaxCm zMinCm zMaxCm')
-table_print('cm_attributes','xFmDimL yFmDimL zFmDimL ixfL jyfL kzfL')
+table_print('cm_attributes', 'xMinCm xMaxCm yMinCm yMaxCm zMinCm zMaxCm')
+table_print('cm_attributes', 'xFmDimL yFmDimL zFmDimL ixfL jyfL kzfL')
 
 write_reference_file(fm_matl_per_cm, cm_attributes)
 
 output_fh.close()
-
