@@ -1,0 +1,859 @@
+penmshxp version 2.70b (Jan 2013)      
+read.log generated at :    06:00:58  on 10/23/2013
+
+ opening penmsh.inp
+ penmsh.inp open success
+ problem name : drcc
+
+ num of z level:              2
+ num of material:            17
+ mathematica:                 0
+
+ z level boundary:     0.000000        21.00000        37.00000    
+
+ max z fine mesh for each z level:
+           20           20
+
+ fine to med ratio along x for each z level:
+            2            2
+ fine to med ratio along y for each z level:
+            2            2
+ fine to med ratio along z for each z level:
+            2            2
+
+ source format:            -1
+ x mesh in src grid(.src):             1
+ y mesh in src grid(.src):             1
+ z mesh in src grid(.src):             1
+ num of group:            30
+ Sn order:             6
+ Pn order:             2
+
+ cross section information:
+ xs format:                 1
+ num_comment:               2
+ legdre order:              2
+ table length:             62
+
+ boundary conditions:
+ ibback=               1
+ ibfrnt=               0
+ jbright=              1
+ jbleft=               0
+ kbottom=              1
+ ktop=                 0
+
+ source material:            11
+ source intensity(neg value as total magnitude):    -112.5000    
+ penmsh.inp read complete
+ ********************************************************
+
+
+ opening inputfile: drcc1.inp
+ drcc1.inp :  open success
+
+ information for z level:             1
+ number of coarse mesh along x(ncx):               5
+ number of coarse mesh along x(ncy):               5
+ max z fine mesh for this z level:               -15
+
+ num of x fine mesh for each coarse mesh in this z level: 
+           20           14           15           12           20
+           18           15           15           12           20
+           16           15           12           12           20
+           12           11           11           11           20
+           15            9            9            9           20
+
+ num of y fine mesh for each coarse mesh in this z level: 
+           20           18           16           12           15
+           14           15           15           11            9
+           15           15           12           11            9
+           12           12           12           11            9
+           20           20           20           20           20
+
+ num of z fine mesh for each coarse mesh in this z level: 
+           15           15           15           15           15
+           15           15           15           15           15
+           15           15           15           15           15
+           15           15           15           15           15
+           15           15           15           15           15
+
+ coarse mesh position along x: 
+    0.000000        7.500000        11.00000        14.50000     
+    20.00000        31.00000    
+
+ coarse mesh position along y: 
+    0.000000        7.500000        11.00000        14.50000     
+    20.00000        31.00000    
+
+ coarse mesh type in this z level: 
+           -1           -1           -1            1           -1
+           -1           -1           -1            1           -1
+           -1           -1            1            1           -1
+            1            1            1            1           -1
+           -1           -1           -1           -1           -1
+
+ number of subregions in corase mesh  in this z level: 
+            1            1            1            1            1
+            1            1            1            1            1
+            1            1            1            1            1
+            1            1            1            1            1
+            1            1            1            1            1
+
+ Mat num for coarse mesh 1 :  3
+ Mat num for coarse mesh 2 :  3
+ Mat num for coarse mesh 3 :  3
+ Mat num for coarse mesh 4 :  3
+ Mat num for coarse mesh 5 :  12
+ Mat num for coarse mesh 6 :  3
+ Mat num for coarse mesh 7 :  3
+ Mat num for coarse mesh 8 :  3
+ Mat num for coarse mesh 9 :  3
+ Mat num for coarse mesh 10 :  12
+ Mat num for coarse mesh 11 :  3
+ Mat num for coarse mesh 12 :  3
+ Mat num for coarse mesh 13 :  3
+ Mat num for coarse mesh 14 :  3
+ Mat num for coarse mesh 15 :  12
+ Mat num for coarse mesh 16 :  3
+ Mat num for coarse mesh 17 :  3
+ Mat num for coarse mesh 18 :  3
+ Mat num for coarse mesh 19 :  3
+ Mat num for coarse mesh 20 :  12
+ Mat num for coarse mesh 21 :  12
+ Mat num for coarse mesh 22 :  12
+ Mat num for coarse mesh 23 :  12
+ Mat num for coarse mesh 24 :  12
+ Mat num for coarse mesh 25 :  12
+
+
+
+Overlay information for coarse mesh: 1
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 3
+ overlay type     : 2  2  2
+ overlay mat      : 5  12  11
+ overlay boundary for overlay: 1
+   -7.600     7.600    -7.600     7.600
+ overlay boundary for overlay: 2
+   -7.200     7.200    -7.200     7.200
+ overlay boundary for overlay: 3
+   -2.000     2.000    -2.000     2.000     0.000     2.000
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 2
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 7
+ overlay type     : 2  2  2  2  2  2  2
+ overlay mat      : 8  8  8  8  8  8  8
+ overlay boundary for overlay: 1
+   -1.520     1.520    11.230    14.270
+ overlay boundary for overlay: 2
+    1.780     4.820    10.796    13.836
+ overlay boundary for overlay: 3
+    4.855     7.895     9.522    12.562
+ overlay boundary for overlay: 4
+    7.496    10.536     7.496    10.536
+ overlay boundary for overlay: 5
+    9.522    12.562     4.855     7.895
+ overlay boundary for overlay: 6
+   10.796    13.836     1.780     4.820
+ overlay boundary for overlay: 7
+   11.230    14.270    -1.520     1.520
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 3
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 7
+ overlay type     : 2  2  2  2  2  2  2
+ overlay mat      : 8  8  8  8  8  8  8
+ overlay boundary for overlay: 1
+   -1.520     1.520    11.230    14.270
+ overlay boundary for overlay: 2
+    1.780     4.820    10.796    13.836
+ overlay boundary for overlay: 3
+    4.855     7.895     9.522    12.562
+ overlay boundary for overlay: 4
+    7.496    10.536     7.496    10.536
+ overlay boundary for overlay: 5
+    9.522    12.562     4.855     7.895
+ overlay boundary for overlay: 6
+   10.796    13.836     1.780     4.820
+ overlay boundary for overlay: 7
+   11.230    14.270    -1.520     1.520
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 5
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 6
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 7
+ overlay type     : 2  2  2  2  2  2  2
+ overlay mat      : 8  8  8  8  8  8  8
+ overlay boundary for overlay: 1
+   -1.520     1.520    11.230    14.270
+ overlay boundary for overlay: 2
+    1.780     4.820    10.796    13.836
+ overlay boundary for overlay: 3
+    4.855     7.895     9.522    12.562
+ overlay boundary for overlay: 4
+    7.496    10.536     7.496    10.536
+ overlay boundary for overlay: 5
+    9.522    12.562     4.855     7.895
+ overlay boundary for overlay: 6
+   10.796    13.836     1.780     4.820
+ overlay boundary for overlay: 7
+   11.230    14.270    -1.520     1.520
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 7
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 7
+ overlay type     : 2  2  2  2  2  2  2
+ overlay mat      : 8  8  8  8  8  8  8
+ overlay boundary for overlay: 1
+   -1.520     1.520    11.230    14.270
+ overlay boundary for overlay: 2
+    1.780     4.820    10.796    13.836
+ overlay boundary for overlay: 3
+    4.855     7.895     9.522    12.562
+ overlay boundary for overlay: 4
+    7.496    10.536     7.496    10.536
+ overlay boundary for overlay: 5
+    9.522    12.562     4.855     7.895
+ overlay boundary for overlay: 6
+   10.796    13.836     1.780     4.820
+ overlay boundary for overlay: 7
+   11.230    14.270    -1.520     1.520
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 8
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 7
+ overlay type     : 2  2  2  2  2  2  2
+ overlay mat      : 8  8  8  8  8  8  8
+ overlay boundary for overlay: 1
+   -1.520     1.520    11.230    14.270
+ overlay boundary for overlay: 2
+    1.780     4.820    10.796    13.836
+ overlay boundary for overlay: 3
+    4.855     7.895     9.522    12.562
+ overlay boundary for overlay: 4
+    7.496    10.536     7.496    10.536
+ overlay boundary for overlay: 5
+    9.522    12.562     4.855     7.895
+ overlay boundary for overlay: 6
+   10.796    13.836     1.780     4.820
+ overlay boundary for overlay: 7
+   11.230    14.270    -1.520     1.520
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 10
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 11
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 7
+ overlay type     : 2  2  2  2  2  2  2
+ overlay mat      : 8  8  8  8  8  8  8
+ overlay boundary for overlay: 1
+   -1.520     1.520    11.230    14.270
+ overlay boundary for overlay: 2
+    1.780     4.820    10.796    13.836
+ overlay boundary for overlay: 3
+    4.855     7.895     9.522    12.562
+ overlay boundary for overlay: 4
+    7.496    10.536     7.496    10.536
+ overlay boundary for overlay: 5
+    9.522    12.562     4.855     7.895
+ overlay boundary for overlay: 6
+   10.796    13.836     1.780     4.820
+ overlay boundary for overlay: 7
+   11.230    14.270    -1.520     1.520
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 12
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 7
+ overlay type     : 2  2  2  2  2  2  2
+ overlay mat      : 8  8  8  8  8  8  8
+ overlay boundary for overlay: 1
+   -1.520     1.520    11.230    14.270
+ overlay boundary for overlay: 2
+    1.780     4.820    10.796    13.836
+ overlay boundary for overlay: 3
+    4.855     7.895     9.522    12.562
+ overlay boundary for overlay: 4
+    7.496    10.536     7.496    10.536
+ overlay boundary for overlay: 5
+    9.522    12.562     4.855     7.895
+ overlay boundary for overlay: 6
+   10.796    13.836     1.780     4.820
+ overlay boundary for overlay: 7
+   11.230    14.270    -1.520     1.520
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 15
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 20
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 21
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 22
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 23
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 24
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 25
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+ drcc1.inp  : read complete
+ ********************************************************
+
+
+ opening inputfile: drcc2.inp
+ drcc2.inp :  open success
+
+ information for z level:             2
+ number of coarse mesh along x(ncx):               5
+ number of coarse mesh along x(ncy):               5
+ max z fine mesh for this z level:               -15
+
+ num of x fine mesh for each coarse mesh in this z level: 
+           20           14           15           12           20
+           18           15           15           12           20
+           16           15           12           12           20
+           12           11           11           11           20
+           15            9            9            9           20
+
+ num of y fine mesh for each coarse mesh in this z level: 
+           20           18           16           12           15
+           14           15           15           11            9
+           15           15           12           11            9
+           12           12           12           11            9
+           20           20           20           20           20
+
+ num of z fine mesh for each coarse mesh in this z level: 
+           15           15           15           15           15
+           15           15           15           15           15
+           15           15           15           15           15
+           15           15           15           15           15
+           15           15           15           15           15
+
+ coarse mesh position along x: 
+    0.000000        7.500000        11.00000        14.50000     
+    20.00000        31.00000    
+
+ coarse mesh position along y: 
+    0.000000        7.500000        11.00000        14.50000     
+    20.00000        31.00000    
+
+ coarse mesh type in this z level: 
+           -1           -1           -1            1           -1
+           -1           -1           -1            1           -1
+           -1           -1            1            1           -1
+            1            1            1            1           -1
+           -1           -1           -1           -1           -1
+
+ number of subregions in corase mesh  in this z level: 
+            1            1            1            1            1
+            1            1            1            1            1
+            1            1            1            1            1
+            1            1            1            1            1
+            1            1            1            1            1
+
+ Mat num for coarse mesh 1 :  3
+ Mat num for coarse mesh 2 :  3
+ Mat num for coarse mesh 3 :  3
+ Mat num for coarse mesh 4 :  3
+ Mat num for coarse mesh 5 :  12
+ Mat num for coarse mesh 6 :  3
+ Mat num for coarse mesh 7 :  3
+ Mat num for coarse mesh 8 :  3
+ Mat num for coarse mesh 9 :  3
+ Mat num for coarse mesh 10 :  12
+ Mat num for coarse mesh 11 :  3
+ Mat num for coarse mesh 12 :  3
+ Mat num for coarse mesh 13 :  3
+ Mat num for coarse mesh 14 :  3
+ Mat num for coarse mesh 15 :  12
+ Mat num for coarse mesh 16 :  3
+ Mat num for coarse mesh 17 :  3
+ Mat num for coarse mesh 18 :  3
+ Mat num for coarse mesh 19 :  3
+ Mat num for coarse mesh 20 :  12
+ Mat num for coarse mesh 21 :  12
+ Mat num for coarse mesh 22 :  12
+ Mat num for coarse mesh 23 :  12
+ Mat num for coarse mesh 24 :  12
+ Mat num for coarse mesh 25 :  12
+
+
+
+Overlay information for coarse mesh: 1
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+   -7.600     7.600    -7.600     7.600
+ overlay boundary for overlay: 2
+   -7.200     7.200    -7.200     7.200
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 2
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 7
+ overlay type     : 2  2  2  2  2  2  2
+ overlay mat      : 8  8  8  8  8  8  8
+ overlay boundary for overlay: 1
+   -1.520     1.520    11.230    14.270
+ overlay boundary for overlay: 2
+    1.780     4.820    10.796    13.836
+ overlay boundary for overlay: 3
+    4.855     7.895     9.522    12.562
+ overlay boundary for overlay: 4
+    7.496    10.536     7.496    10.536
+ overlay boundary for overlay: 5
+    9.522    12.562     4.855     7.895
+ overlay boundary for overlay: 6
+   10.796    13.836     1.780     4.820
+ overlay boundary for overlay: 7
+   11.230    14.270    -1.520     1.520
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 3
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 7
+ overlay type     : 2  2  2  2  2  2  2
+ overlay mat      : 8  8  8  8  8  8  8
+ overlay boundary for overlay: 1
+   -1.520     1.520    11.230    14.270
+ overlay boundary for overlay: 2
+    1.780     4.820    10.796    13.836
+ overlay boundary for overlay: 3
+    4.855     7.895     9.522    12.562
+ overlay boundary for overlay: 4
+    7.496    10.536     7.496    10.536
+ overlay boundary for overlay: 5
+    9.522    12.562     4.855     7.895
+ overlay boundary for overlay: 6
+   10.796    13.836     1.780     4.820
+ overlay boundary for overlay: 7
+   11.230    14.270    -1.520     1.520
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 5
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 6
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 7
+ overlay type     : 2  2  2  2  2  2  2
+ overlay mat      : 8  8  8  8  8  8  8
+ overlay boundary for overlay: 1
+   -1.520     1.520    11.230    14.270
+ overlay boundary for overlay: 2
+    1.780     4.820    10.796    13.836
+ overlay boundary for overlay: 3
+    4.855     7.895     9.522    12.562
+ overlay boundary for overlay: 4
+    7.496    10.536     7.496    10.536
+ overlay boundary for overlay: 5
+    9.522    12.562     4.855     7.895
+ overlay boundary for overlay: 6
+   10.796    13.836     1.780     4.820
+ overlay boundary for overlay: 7
+   11.230    14.270    -1.520     1.520
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 7
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 7
+ overlay type     : 2  2  2  2  2  2  2
+ overlay mat      : 8  8  8  8  8  8  8
+ overlay boundary for overlay: 1
+   -1.520     1.520    11.230    14.270
+ overlay boundary for overlay: 2
+    1.780     4.820    10.796    13.836
+ overlay boundary for overlay: 3
+    4.855     7.895     9.522    12.562
+ overlay boundary for overlay: 4
+    7.496    10.536     7.496    10.536
+ overlay boundary for overlay: 5
+    9.522    12.562     4.855     7.895
+ overlay boundary for overlay: 6
+   10.796    13.836     1.780     4.820
+ overlay boundary for overlay: 7
+   11.230    14.270    -1.520     1.520
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 8
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 7
+ overlay type     : 2  2  2  2  2  2  2
+ overlay mat      : 8  8  8  8  8  8  8
+ overlay boundary for overlay: 1
+   -1.520     1.520    11.230    14.270
+ overlay boundary for overlay: 2
+    1.780     4.820    10.796    13.836
+ overlay boundary for overlay: 3
+    4.855     7.895     9.522    12.562
+ overlay boundary for overlay: 4
+    7.496    10.536     7.496    10.536
+ overlay boundary for overlay: 5
+    9.522    12.562     4.855     7.895
+ overlay boundary for overlay: 6
+   10.796    13.836     1.780     4.820
+ overlay boundary for overlay: 7
+   11.230    14.270    -1.520     1.520
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 10
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 11
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 7
+ overlay type     : 2  2  2  2  2  2  2
+ overlay mat      : 8  8  8  8  8  8  8
+ overlay boundary for overlay: 1
+   -1.520     1.520    11.230    14.270
+ overlay boundary for overlay: 2
+    1.780     4.820    10.796    13.836
+ overlay boundary for overlay: 3
+    4.855     7.895     9.522    12.562
+ overlay boundary for overlay: 4
+    7.496    10.536     7.496    10.536
+ overlay boundary for overlay: 5
+    9.522    12.562     4.855     7.895
+ overlay boundary for overlay: 6
+   10.796    13.836     1.780     4.820
+ overlay boundary for overlay: 7
+   11.230    14.270    -1.520     1.520
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 12
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 7
+ overlay type     : 2  2  2  2  2  2  2
+ overlay mat      : 8  8  8  8  8  8  8
+ overlay boundary for overlay: 1
+   -1.520     1.520    11.230    14.270
+ overlay boundary for overlay: 2
+    1.780     4.820    10.796    13.836
+ overlay boundary for overlay: 3
+    4.855     7.895     9.522    12.562
+ overlay boundary for overlay: 4
+    7.496    10.536     7.496    10.536
+ overlay boundary for overlay: 5
+    9.522    12.562     4.855     7.895
+ overlay boundary for overlay: 6
+   10.796    13.836     1.780     4.820
+ overlay boundary for overlay: 7
+   11.230    14.270    -1.520     1.520
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 15
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 20
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 21
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 22
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 23
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 24
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+Overlay information for coarse mesh: 25
+ 1 block(s) 
+
+overlay block:  1
+ num of overlay   : 2
+ overlay type     : 2  2
+ overlay mat      : 5  3
+ overlay boundary for overlay: 1
+  -31.000    31.000   -31.000    31.000
+ overlay boundary for overlay: 2
+  -30.400    30.400   -30.400    30.400
+done overlay block:   1
+ ------------------------------------
+
+ drcc2.inp  : read complete
+ ********************************************************
+
+ PENMSH input files(.inp) completed
+ *************************************************
+ Begin processing log
+
+ Reading Mat vol file:./drcc.mba                                                                                         
+ Reading Mat vol file done, file:./drcc.mba                                                                              
+ Mat vol comparison output file done, file: drcc_out.mba                                                                 
+ Assigning Mat Num to fine meshes.....done
+ Assigning Src Mag to fine meshes.....done
+ Macro file for Tecplot, file: drcc.mcr                                                                                  
+ Dumping binary tecplot file...done drcc_mix.plt
+ Reading Src spectrum(.spc) file: ./drcc.spc                                                                             
+ .spc file done: ./drcc.spc                                                                                              
+ Assigning Pentran Varibles...done
+ Generating .pen pentran inputfile...done drcc_out.pen
+ Generating TITAN input file...done drcc_titan.inp
+Plotting slice at z=     10.50, Mat Num distribution (num_material= 17), file: drc_z1cm.png
+Plotting slice at z=     29.00, Mat Num distribution (num_material= 17), file: drc_z2cm.png
+ Plotting z level...  z lev graphic file(s) done 
+All done, logfile : read.log
+ ***************************************************
+Total Runtime :     0.0sec
+
+run finished at :    06:00:58  on 10/23/2013
+

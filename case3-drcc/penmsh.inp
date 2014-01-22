@@ -1,0 +1,23 @@
+drcc    
+/ Model 1: Dual Range Coincidence Counter                             
+/no. coarse z-levels, no. of materials, imath
+2, 17, 0
+/z-level coarse mesh boundariesi /partial      
+0, 21.0  37.0 /  full model 0.0 20.0, 32.0 74.0 90.0 95.0  
+/max. number of fine z-mesh per coarse z-level
+20 20 20 20 20 20
+/fine-to-med grid ratio along x.., y.., z.. in each coarse z-level
+2 2 2 2 2 2
+2 2 2 2 2 2
+2 2 2 2 2 2
+/source format iso, # x-src mesh, # y-src mesh, # z-src mesh, ngrp, sn, pn
+-1,1,1,1,30,6,2
+/xsec type, xsec #comment cards, xsec Leg order, ihm 
+1, 2, 2, 62 
+/Bdy conds: ibback(-x),ibfrnt(+x),jbeast(-y),jbwest(+y),kbsout(-z),kbnort(+z)
+1,0,1,0,1,0
+/source material id (if iso <0, need that number of sources)
+11
+/source intensity(-ies) Pu metal in scrap 
+-112.5   
+
