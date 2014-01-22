@@ -1,30 +1,42 @@
 #!/usr/bin/env python
-#
 from __future__ import print_function
+import argparse
 import textwrap
 import datetime
 import sys
 from decimal import *  # noqa
 
-# inputs: *.pen file
+# Parse 'file' argument and force printing of help if no arguments called
 
+parser = argparse.ArgumentParser()
+parser.add_argument("-f", '--file',
+                    help="Input: PENTRAN Input File to Process")
+parser.add_argument("-lp", '--logprint', action="store_true",
+                    help="(Optional) Print log to std_out")
+
+# Force call to help if no arguments given
+if len(sys.argv) == 1:
+    parser.print_help()
+    sys.exit(1)
+args = parser.parse_args()
+
+# End of argument parsing
+
+# inputs: *.pen file
 # outputs: *.mc file for MCNP5 input, *.ref file
 
-# description of *.ref file
+# Description of *.ref file
 # -------------------------
+# The reference file is similar to that of a PENTRAN .flx file, with all
+# information except for the flux, which is obtained in another post-processing
+# script.  It has the format Group Coarse Dom.Matl x y z Flux(Blank), which
+# makes the MCNP file appear in a format that is similar to that of a PENTRAN
+# file.
 
-#   The reference file is similar to that of a PENTRAN .flx file,
-#   with all information except for the flux,
-#   which is obtained in another post-processing script.
-#   It has the format Group Coarse Dom.Matl x y z Flux(Blank),
-#   which makes the MCNP file appear in a format that is similar
-#   to that of a PENTRAN file
-
-# handling of eigenvalue problems
+# Handling of eigenvalue problems
 # -------------------------------
-
-#   If a 'kcode' or 'kcode.txt' is found in the same directory
-#   The file's contents are spliced into the MCNP5 data section
+# If a 'kcode' or 'kcode.txt' is found in the same directory, The file's
+# contents are spliced into the MCNP5 data section.
 
 
 #class hashabledict(dict):
@@ -55,8 +67,9 @@ def generate_instance(name, value):
 
 
 def pretty_print(var_str):
-    print(var_str+':', len(globals()[var_str]), globals()[var_str])
-    print()
+    print(var_str+':', len(globals()[var_str]), globals()[var_str],
+          file=log_fh)
+    print(file=log_fh)
 
 
 def table_print(dictionary, var_str):
@@ -68,20 +81,21 @@ def table_print(dictionary, var_str):
         # table_length=len(globals()[dictionary][item])
     print_table = zip(*table)
 
-    print(' C.M.', end="")
+    print(' C.M.', end="", file=log_fh)
     for item in name_list:
-        print(item.rjust(11), end="")
-    print()
+        print(item.rjust(11), end="", file=log_fh)
+    print(file=log_fh)
 
     fm_count = 0
     for item in print_table:
         fm_count += 1
-        print('{0:5d}'.format(fm_count), end="")
+        print('{0:5d}'.format(fm_count), end="", file=log_fh)
         for sub_item in item:
             #print(subitem)
-            print('   {0:8.{1}f}'.format(float(sub_item), 4), end="")
-        print()
-    print()
+            print('   {0:8.{1}f}'.format(float(sub_item), 4),
+                  end="", file=log_fh)
+        print(file=log_fh)
+    print(file=log_fh)
 
 
 def fido_grab(line, fido_per_cm):
@@ -169,8 +183,8 @@ def bdy_check(f, line):
 
 def calc_fm_per_cm():
     """ Calculate Fine Mesh per Coarse Mesh """
-    print("\nCalculating number of fine meshes per coarse mesh:")
-    print("-"*80)
+    print("\nCalculating number of fine meshes per coarse mesh:", file=log_fh)
+    print("-"*80, file=log_fh)
     # maxgcm = instances["maxgcm"].value
     ixL = instances["ixfine"].value.split()
     jyL = instances["jyfine"].value.split()
@@ -192,10 +206,10 @@ def calc_fm_per_cm():
     formatted_string = ""
     for item in result_list:
             formatted_string += str(item.ljust(14))
-    print(textwrap.fill(formatted_string, width=84)+"\n")
+    print(textwrap.fill(formatted_string, width=84)+"\n", file=log_fh)
 
     print("Total FM in all CM-->" +
-          str(sum([i*j*k for i, j, k in zip(ixL, jyL, kzL)])))
+          str(sum([i*j*k for i, j, k in zip(ixL, jyL, kzL)])), file=log_fh)
     fm_per_cm = sum([i*j*k for i, j, k in zip(ixL, jyL, kzL)])
 
     fm_attributes = dict(fm_per_cm=fm_per_cm,
@@ -207,8 +221,8 @@ def calc_fm_per_cm():
 
 def calc_boundary_per_cm(xFm, yFm, zFm):
     """ Collect physical boundaries into six 1D arrays for each coarse mesh """
-    print("\nCalculating physical boundaries per coarse mesh:")
-    print("-"*80)
+    print("\nCalculating physical boundaries per coarse mesh:", file=log_fh)
+    print("-"*80, file=log_fh)
     xMinCm = []
     xMaxCm = []
     xFmDimL = []
@@ -225,7 +239,7 @@ def calc_boundary_per_cm(xFm, yFm, zFm):
     y_dim_span = len(ymeshL) - 1
     z_dim_span = len(zmeshL) - 1
     maxgcm = x_dim_span * y_dim_span * z_dim_span
-    print("Independent calculation of maxgcm-->"+str(maxgcm))
+    print("Independent calculation of maxgcm-->"+str(maxgcm), file=log_fh)
     idx = -1
     for k in range(z_dim_span):
         for j in range(y_dim_span):
@@ -482,21 +496,24 @@ def produce_matl_cell():
 
 
 def pretty_print_instances(instances):
-    print()
+    print(file=log_fh)
     itemString = ""
     for item in instances:
         prestring = str(item) + "--> "
         if "mesh" in str(item):
             meshString = instances[item].stringArgs(prestring)+" "
-            print(textwrap.fill(meshString, width=80, subsequent_indent=' '))
+            print(textwrap.fill(meshString, width=80, subsequent_indent=' '),
+                  file=log_fh)
         elif "fine" in str(item):
             fineString = instances[item].stringArgs(prestring)+" "
-            print(textwrap.fill(fineString, width=80, subsequent_indent=' '))
+            print(textwrap.fill(fineString, width=80, subsequent_indent=' '),
+                  file=log_fh)
         else:
             itemString += instances[item].stringArgs(prestring) + " "
 
-    print(textwrap.fill(itemString, width=80, subsequent_indent=' '))
-    print()
+    print(textwrap.fill(itemString, width=80, subsequent_indent=' '),
+          file=log_fh)
+    print(file=log_fh)
 
 
 def header():
@@ -532,22 +549,22 @@ def analyze_geometry_block(f):
 
 def print_fido_string(fido_per_cm):
     print("Printing FIDO strings for each coarse mesh"
-          " (output may be truncated):")
-    print("-"*80)
+          " (output may be truncated):", file=log_fh)
+    print("-"*80, file=log_fh)
     string = ""
     for index, item in enumerate(fido_per_cm):
         if len(item) < 70:
             string += str(index + 1) + "-->" + item+"   "
         else:
             if len(string) > 0:
-                print(textwrap.fill(string, width=80))
+                print(textwrap.fill(string, width=80), file=log_fh)
             string = str(index + 1) + "-->" + item[:70]+" ..."
-            print(string)
+            print(string, file=log_fh)
             string = ""
 
 
 def write_cell_card():
-    print("Printing cell card")
+    print("Printing cell card", file=log_fh)
 
     print("c MESH2MCNP MCNP Input Generator, Date generated: ",
           datetime.date.today(), file=output_fh)
@@ -675,7 +692,7 @@ def write_surface_and_data(group_upper_boundaries):
     maxgcm = instances["maxgcm"].value
     maxmat = instances["maxmat"].value
 
-    print("Printing surface card")
+    print("Printing surface card", file=log_fh)
     ### surface card
     print("", file=output_fh)
     print("c surface cards -----", file=output_fh)
@@ -683,7 +700,7 @@ def write_surface_and_data(group_upper_boundaries):
     for rpp in rpp_list:
             print(rpp, file=output_fh)
 
-    print("Printing data card")
+    print("Printing data card", file=log_fh)
     ### data card
     print("", file=output_fh)
     print("c data card -----", file=output_fh)
@@ -768,18 +785,18 @@ def insert_kcode():
 
     try:
         with open('kcode') as kfile:
-            print("Appending contents of kcode...")
+            print("Appending contents of kcode...", file=log_fh)
             for line in kfile:
                 print(line, end="", file=output_fh)
     except IOError as e:  # noqa
-        print('no \'kcode\' file detected, trying \'kcode.txt\'')
+        print("no 'kcode' file detected, trying 'kcode.txt'", file=log_fh)
         try:
             with open('kcode.txt') as kfile:
-                print("Appending contents of kcode.txt...")
+                print("Appending contents of kcode.txt...", file=log_fh)
                 for line in kfile:
                     print(line, end="", file=output_fh)
         except IOError as e2:  # noqa
-            print('')
+            print('', file=log_fh)
 
 
 def insert_group_boundaries(file):
@@ -791,7 +808,7 @@ def insert_group_boundaries(file):
     basename = file_str[0]
     try:
         with open(basename+'.grp') as gfile:
-            print("Analyzing Group File for", groups, "groups...")
+            print("Analyzing Group File for", groups, "groups...", file=log_fh)
             next(gfile)
             next(gfile)
             next(gfile)
@@ -806,34 +823,35 @@ def insert_group_boundaries(file):
                     break
 
         line_count = len(open(basename+'.grp', 'r').readlines())
-        print("Group(.grp) file has", line_count, "lines")
+        print("Group(.grp) file has", line_count, "lines", file=log_fh)
     except IOError as e:  # noqa
-        print("no grp file detected (optional)")
+        print("No grp file detected (optional)", file=log_fh)
 
     return group_upper_boundaries
 
 # main script begin
+header()
 
-#lenArgv=len(sys.argv)
-#if lenArgv == 1:
-#        input_name=input("Enter PENTRAN file name: ")
-#else:
+# deal with argparse args
+if args.file is None:
+    print("No PENTRAN file specified, exiting")
+    sys.exit(0)
+else:
+    print("Working with PENTRAN Input File:", args.file)
+    input_file = args.file
+    log_file = 'm2mc.log'
+    if args.logprint:
+        log_fh = open(log_file, 'w')
+        print("Logging to: m2mc.log")
+    else:
+        sys.stdout = open(log_file, 'w')
+        print("Logging to: stdout")
 
-input_file = sys.argv[1]
-print(sys.argv[1])
-
-#input_file=input("Enter PENTRAN file name: ")
-#DBG input_file="uo2asm.pen"
+input_fh = open(input_file, 'r')
 output_file = input_file.split('.')[0]+'.mc'
 print("Assigning name of output as:", output_file)
 
-header()
-
-
-input_fh = open(input_file, 'r')
-#reference_file=open('prb.ref','w')
-
-#GATHER INFORMATION
+# GATHER INFORMATION
 
 # initial search on fm, cm, geometry information in .pen file
 for line in input_fh:
@@ -846,14 +864,14 @@ for line in input_fh:
 
     # examine BLOCK II section
     if "BLOCK II(geometry)" in line:
-        print("Analyzing Geometry Block...")
+        print("Analyzing Geometry Block...", file=log_fh)
         fido_per_cm = analyze_geometry_block(input_fh)
 
     # identify boundary conditions
     bdy_check(input_fh, line)
 
-print("\nPENTRAN Instances Summary")
-print("-"*80, end="")
+print("\nPENTRAN Instances Summary", file=log_fh)
+print("-"*80, end="", file=log_fh)
 pretty_print_instances(instances)
 print_fido_string(fido_per_cm)
 
@@ -873,11 +891,12 @@ group_upper_boundaries = insert_group_boundaries(input_file)
 write_surface_and_data(group_upper_boundaries)
 insert_kcode()
 
-print("\nPhysical Dimension Summary")
-print("-"*80)
+print("\nPhysical Dimension Summary", file=log_fh)
+print("-"*80, file=log_fh)
 table_print('cm_attributes', 'xMinCm xMaxCm yMinCm yMaxCm zMinCm zMaxCm')
 table_print('cm_attributes', 'xFmDimL yFmDimL zFmDimL ixfL jyfL kzfL')
 
-write_reference_file(fm_matl_per_cm, cm_attributes)
+# disable prb.ref for now
+# write_reference_file(fm_matl_per_cm, cm_attributes)
 
 output_fh.close()
