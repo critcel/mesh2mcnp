@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-f", '--file',
                     help="Input: PENTRAN Input File to Process")
 parser.add_argument("-lp", '--logprint', action="store_true",
-                    help="(Optional) Print log to std_out")
+                    help="(Optional) Print log to file instead of stdout")
 
 # Force call to help if no arguments given
 if len(sys.argv) == 1:
@@ -796,7 +796,7 @@ def insert_kcode():
                 for line in kfile:
                     print(line, end="", file=output_fh)
         except IOError as e2:  # noqa
-            print('', file=log_fh)
+            pass
 
 
 def insert_group_boundaries(file):
@@ -837,19 +837,19 @@ if args.file is None:
     print("No PENTRAN file specified, exiting")
     sys.exit(0)
 else:
-    print("Working with PENTRAN Input File:", args.file)
-    input_file = args.file
     log_file = 'm2mc.log'
     if args.logprint:
+        log_fh = sys.stdout
+        print("Logging to: stdout")
+    else:
         log_fh = open(log_file, 'w')
         print("Logging to: m2mc.log")
-    else:
-        sys.stdout = open(log_file, 'w')
-        print("Logging to: stdout")
+    print("Working with PENTRAN Input File:", args.file, file=log_fh)
+    input_file = args.file
 
 input_fh = open(input_file, 'r')
 output_file = input_file.split('.')[0]+'.mc'
-print("Assigning name of output as:", output_file)
+print("Assigning name of output as:", output_file, file=log_fh)
 
 # GATHER INFORMATION
 
