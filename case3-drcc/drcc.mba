@@ -1,0 +1,24 @@
+/        DRCC neutron Counter             
+/
+/
+/ Material    Mat     Target(cm3)     Density 
+/   name      No.      volume          g/cc
+/----------  ------  -------------    -------  
+ PuLT6p240     1      0.00              19.6  
+ HEU90p        2      0.00              19.4 
+ Polyehtylene  3      2.426E4           0.95   
+ Cd            4      0.0000            8.65 
+ Al            5      1.17E3            2.70
+ Cargo_Steel   6      0.00              2.62
+ Steel-air     7      0.00              1.572 
+ he3-4atm      8      1.62E3            1.3697E-3 
+ Water         9      0.000             1.00
+ Water-halfd   10     0.000             0.50
+ Water-third   11     0.000             0.333
+ Air-humid     12     8.6E3             1.2028E-3
+ Asphalt       13     0.000             2.115
+ Concrete      14     0.000             2.30 
+ ObrienDirt    15     0.000             1.7
+ SS304         16     0.000             7.92  
+ DowEFoam221   17     0.000             0.035  
+

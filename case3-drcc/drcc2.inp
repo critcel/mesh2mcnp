@@ -1,0 +1,225 @@
+/ncx, ncy, maxfinz  (maxfinz < 0, add z-fine per cm below y-fine)
+5,5,-15
+/ x-fine mesh per cm (# seq along cm rows of x)
+20 14 15 12 20  
+18 15 15 12 20  
+16 15 12 12 20  
+12 11 11 11 20  
+15  9  9  9 20  
+/ y-fine mesh per cm (# seq ... y)
+20 18 16 12 15  
+14 15 15 11  9  
+15 15 12 11  9  
+12 12 12 11  9  
+20 20 20 20 20  
+/ z-fine mesh per cm (# seq ... z)
+15 15 15 15 15  
+15 15 15 15 15  
+15 15 15 15 15  
+15 15 15 15 15  
+15 15 15 15 15  
+/ cm bounds along x-axis (in seq ...x)
+0.0 7.5 11.0 14.5 20.0 31.0 
+/cm bounds along y-axis (in seq ...y)
+0.0 7.5 11.0 14.5 20.0 31.0  
+/ cm type, each cm (<0 : look for overlay)
+-1 -1 -1  1 -1  
+-1 -1 -1  1 -1  
+-1 -1  1  1 -1  
+ 1  1  1  1 -1  
+-1 -1 -1 -1 -1  
+/ number of material regions per coarse mesh
+1 1 1 1 1  
+1 1 1 1 1  
+1 1 1 1 1  
+1 1 1 1 1  
+1 1 1 1 1  
+/ coarse mesh  1 (cm type 1: square with only 1 region!)
+3
+/ coarse mesh  2 (cm type 1: square with only 1 region!)
+3
+/ coarse mesh  3 (cm type 1: square with only 1 region!)
+3  
+/ coarse mesh  4 (cm type 1: square with only 1 region!)
+3
+/ coarse mesh  5 (cm type 1: square with only 1 region!)
+12
+/ coarse mesh2 1 (cm type 1: square with only 1 region!)
+3
+/ coarse mesh  2 (cm type 1: square with only 1 region!)
+3
+/ coarse mesh  3 (cm type 1: square with only 1 region!)
+3  
+/ coarse mesh  4 (cm type 1: square with only 1 region!)
+3
+/ coarse mesh  5 (cm type 1: square with only 1 region!)
+12
+/ coarse mesh3 1 (cm type 1: square with only 1 region!)
+3
+/ coarse mesh  2 (cm type 1: square with only 1 region!)
+3
+/ coarse mesh  3 (cm type 1: square with only 1 region!)
+3  
+/ coarse mesh  4 (cm type 1: square with only 1 region!)
+3
+/ coarse mesh  5 (cm type 1: square with only 1 region!)
+12
+/ coarse meshr4 1 (cm type 1: square with only 1 region!)
+3
+/ coarse mesh  2 (cm type 1: square with only 1 region!)
+3
+/ coarse mesh  3 (cm type 1: square with only 1 region!)
+3  
+/ coarse mesh  4 (cm type 1: square with only 1 region!)
+3
+/ coarse mesh  5 (cm type 1: square with only 1 region!)
+12
+/ coarse mesh5 1 (cm type 1: square with only 1 region!)
+12
+/ coarse mesh  2 (cm type 1: square with only 1 region!)
+12
+/ coarse mesh  3 (cm type 1: square with only 1 region!)
+12 
+/ coarse mesh  4 (cm type 1: square with only 1 region!)
+12
+/ coarse mesh  5 (cm type 1: square with only 1 region!)
+12
+/ overlay  1 (#over, shape 2=cylinder, mat#1.., xlo1.., xhi1.., ylo1.., yhi1..)  
+2
+2 2
+5  3 
+-7.6  7.6  -7.6  7.6 
+-7.2  7.2  -7.2  7.2 
+/ overlay  2 (#over, shape 2=cylinder, mat#1.., xlo1.., xhi1.., ylo1.., yhi1..)  
+7
+2 2 2 2 2 2 2
+8 8 8 8 8 8 8  
+ -1.52, 1.52, 11.23, 14.27
+ 1.77994, 4.81994, 10.7956, 13.8356
+ 4.855, 7.895, 9.52182, 12.5618
+ 7.49561, 10.5356, 7.49561, 10.5356
+ 9.52182, 12.5618, 4.855, 7.895
+ 10.7956, 13.8356, 1.77994, 4.81994
+ 11.23, 14.27, -1.52, 1.52
+/ overlay  3 (#over, shape 2=cylinder, mat#1.., xlo1.., xhi1.., ylo1.., yhi1..)  
+7
+2 2 2 2 2 2 2
+8 8 8 8 8 8 8  
+ -1.52, 1.52, 11.23, 14.27
+ 1.77994, 4.81994, 10.7956, 13.8356
+ 4.855, 7.895, 9.52182, 12.5618
+ 7.49561, 10.5356, 7.49561, 10.5356
+ 9.52182, 12.5618, 4.855, 7.895
+ 10.7956, 13.8356, 1.77994, 4.81994
+ 11.23, 14.27, -1.52, 1.52
+/ overlay  5 (#over, shape 2=cylinder, mat#1.., xlo1.., xhi1.., ylo1.., yhi1..)
+2
+2 2
+5 3
+-31.0 31.0 -31.0 31.0
+-30.4 30.4 -30.4 30.4
+/ overlay  6 (#over, shape 2=cylinder, mat#1.., xlo1.., xhi1.., ylo1.., yhi1..)  
+7
+2 2 2 2 2 2 2
+8 8 8 8 8 8 8  
+ -1.52, 1.52, 11.23, 14.27
+ 1.77994, 4.81994, 10.7956, 13.8356
+ 4.855, 7.895, 9.52182, 12.5618
+ 7.49561, 10.5356, 7.49561, 10.5356
+ 9.52182, 12.5618, 4.855, 7.895
+ 10.7956, 13.8356, 1.77994, 4.81994
+ 11.23, 14.27, -1.52, 1.52
+/ overlay  7 (#over, shape 2=cylinder, mat#1.., xlo1.., xhi1.., ylo1.., yhi1..)  
+7
+2 2 2 2 2 2 2
+8 8 8 8 8 8 8  
+ -1.52, 1.52, 11.23, 14.27
+ 1.77994, 4.81994, 10.7956, 13.8356
+ 4.855, 7.895, 9.52182, 12.5618
+ 7.49561, 10.5356, 7.49561, 10.5356
+ 9.52182, 12.5618, 4.855, 7.895
+ 10.7956, 13.8356, 1.77994, 4.81994
+ 11.23, 14.27, -1.52, 1.52
+/ overlay  8 (#over, shape 2=cylinder, mat#1.., xlo1.., xhi1.., ylo1.., yhi1..)  
+7
+2 2 2 2 2 2 2
+8 8 8 8 8 8 8  
+ -1.52, 1.52, 11.23, 14.27
+ 1.77994, 4.81994, 10.7956, 13.8356
+ 4.855, 7.895, 9.52182, 12.5618
+ 7.49561, 10.5356, 7.49561, 10.5356
+ 9.52182, 12.5618, 4.855, 7.895
+ 10.7956, 13.8356, 1.77994, 4.81994
+ 11.23, 14.27, -1.52, 1.52
+/ overlay 10 (#over, shape 2=cylinder, mat#1.., xlo1.., xhi1.., ylo1.., yhi1..)
+2
+2 2
+5 3
+-31.0 31.0 -31.0 31.0
+-30.4 30.4 -30.4 30.4
+/ overlay  11(#over, shape 2=cylinder, mat#1.., xlo1.., xhi1.., ylo1.., yhi1..)  
+7
+2 2 2 2 2 2 2
+8 8 8 8 8 8 8  
+ -1.52, 1.52, 11.23, 14.27
+ 1.77994, 4.81994, 10.7956, 13.8356
+ 4.855, 7.895, 9.52182, 12.5618
+ 7.49561, 10.5356, 7.49561, 10.5356
+ 9.52182, 12.5618, 4.855, 7.895
+ 10.7956, 13.8356, 1.77994, 4.81994
+ 11.23, 14.27, -1.52, 1.52
+/ overlay  12(#over, shape 2=cylinder, mat#1.., xlo1.., xhi1.., ylo1.., yhi1..)  
+7
+2 2 2 2 2 2 2
+8 8 8 8 8 8 8  
+ -1.52, 1.52, 11.23, 14.27
+ 1.77994, 4.81994, 10.7956, 13.8356
+ 4.855, 7.895, 9.52182, 12.5618
+ 7.49561, 10.5356, 7.49561, 10.5356
+ 9.52182, 12.5618, 4.855, 7.895
+ 10.7956, 13.8356, 1.77994, 4.81994
+ 11.23, 14.27, -1.52, 1.52
+/ overlay 15 (#over, shape 2=cylinder, mat#1.., xlo1.., xhi1.., ylo1.., yhi1..)
+2
+2 2
+5 3
+-31.0 31.0 -31.0 31.0
+-30.4 30.4 -30.4 30.4
+/ overlay 20 (#over, shape 2=cylinder, mat#1.., xlo1.., xhi1.., ylo1.., yhi1..)
+2
+2 2
+5 3
+-31.0 31.0 -31.0 31.0
+-30.4 30.4 -30.4 30.4
+/ overlay 21 (#over, shape 2=cylinder, mat#1.., xlo1.., xhi1.., ylo1.., yhi1..)
+2
+2 2
+5 3
+-31.0 31.0 -31.0 31.0
+-30.4 30.4 -30.4 30.4
+/ overlay 22 (#over, shape 2=cylinder, mat#1.., xlo1.., xhi1.., ylo1.., yhi1..)
+2
+2 2
+5 3
+-31.0 31.0 -31.0 31.0
+-30.4 30.4 -30.4 30.4
+/ overlay 23 (#over, shape 2=cylinder, mat#1.., xlo1.., xhi1.., ylo1.., yhi1..)
+2
+2 2
+5 3
+-31.0 31.0 -31.0 31.0
+-30.4 30.4 -30.4 30.4
+/ overlay 24 (#over, shape 2=cylinder, mat#1.., xlo1.., xhi1.., ylo1.., yhi1..)
+2
+2 2
+5 3
+-31.0 31.0 -31.0 31.0
+-30.4 30.4 -30.4 30.4
+/ overlay 25 (#over, shape 2=cylinder, mat#1.., xlo1.., xhi1.., ylo1.., yhi1..)
+2
+2 2
+5 3
+-31.0 31.0 -31.0 31.0
+-30.4 30.4 -30.4 30.4
+
+
