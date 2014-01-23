@@ -2,3 +2,4 @@ bug-case*
 *.mc
 *.ref
 *.log
+*.pyc
