@@ -1,26 +1,13 @@
 #!/usr/bin/env python
+"""
+The MESH2MCNP Discrete Geometry Parser
+"""
 from __future__ import print_function
 import argparse
 import textwrap
 import datetime
 import sys
 from decimal import *  # noqa
-
-# Parse 'file' argument and force printing of help if no arguments called
-
-parser = argparse.ArgumentParser()
-parser.add_argument("-f", '--file',
-                    help="Input: PENTRAN Input File to Process")
-parser.add_argument("-lp", '--logprint', action="store_true",
-                    help="(Optional) Print log to file instead of stdout")
-
-# Force call to help if no arguments given
-if len(sys.argv) == 1:
-    parser.print_help()
-    sys.exit(1)
-args = parser.parse_args()
-
-# End of argument parsing
 
 # inputs: *.pen file
 # outputs: *.mc file for MCNP5 input, *.ref file
@@ -39,12 +26,7 @@ args = parser.parse_args()
 # contents are spliced into the MCNP5 data section.
 
 
-#class hashabledict(dict):
-#    def __hash__(self):
-#        return hash(tuple(sorted(self.items())))
-
 ### defining an instance class
-
 class Instance:
     def __init__(self, value):
         self.value = value
@@ -53,19 +35,15 @@ class Instance:
         """Method docstring."""
         return prestring+str(self.value)
 
-instances = {}
-
 
 def generate_instance(name, value):
     myName = name.strip()
     myValue = value
     instances[myName] = Instance(myValue)
-
 ### end of instance class
 
+
 # auxilary functions
-
-
 def pretty_print(var_str):
     print(var_str+':', len(globals()[var_str]), globals()[var_str],
           file=log_fh)
@@ -487,11 +465,20 @@ def produce_matl_cell():
     maxmat = instances["maxmat"].value
     maxmat = int(maxmat)
     matlCell = []
-    for i in range(1, maxmat + 1):
-        string = str(i).ljust(5)
-        string += str(i).ljust(4) + "1.0  -99990   u="
-        string += str(i).ljust(4) + "  imp:n=1 $ material " + str(i)
-        matlCell.append(string)
+    if use_mcm:
+        for i in range(1, maxmat + 1):
+            string = str(i).ljust(5)
+            string += str(i).ljust(4)
+            string += str(densities[i-1]*-1).ljust(10)
+            string += "  -99990   u="
+            string += str(i).ljust(4) + "  imp:n=1 $ material " + str(i)
+            matlCell.append(string)
+    else:
+        for i in range(1, maxmat + 1):
+            string = str(i).ljust(5)
+            string += str(i).ljust(4) + "1.0  -99990   u="
+            string += str(i).ljust(4) + "  imp:n=1 $ material " + str(i)
+            matlCell.append(string)
     return matlCell
 
 
@@ -519,10 +506,10 @@ def pretty_print_instances(instances):
 def header():
     print(" ")
     print("                          MESH2MCNP")
-    print("                         Version 1.0e")
+    print("                         Version 2.0")
     print("                        By  K. Manalo")
     print("                     Georgia Tech / CRITCEL")
-    print("                          Nov   2012")
+    print("                          Jan   2014")
     print(" ")
 
 
@@ -576,6 +563,8 @@ def write_cell_card():
           "c   is assigned to a matching cell number\n" +
           "c   and matching universe (same as matid)\n" +
           "c   inside of the global rpp", file=output_fh)
+    if use_mcm:
+        print("c Using densities parsed from " + mcm_file, file=output_fh)
     matlCell = produce_matl_cell()
     for cell in matlCell:
             print(cell, file=output_fh)
@@ -707,76 +696,87 @@ def write_surface_and_data(group_upper_boundaries):
     print("mode n", file=output_fh)
 
     # material cards
-    print("c material cards", file=output_fh)
-    for i in range(1, maxmat+1):
-        print("m" + str(i) + "  " + str(i) + "000.22m  1.0", file=output_fh)
+    if not use_mcm:
+        print("c material cards", file=output_fh)
+        for i in range(1, maxmat+1):
+            print("m" + str(i) + "  " +
+                  str(i) + "000.22m  1.0", file=output_fh)
 
-    # multigroup option
-    print("mgopt f " + str(groups), file=output_fh)
+        # multigroup option is applied if not using mcm card
+        print("mgopt f " + str(groups), file=output_fh)
+    else:
+        print("c Warning: MESH2MCNP does not check mcm material compatibility",
+              file=output_fh)
+        with open(mcm_file, 'r') as mcm_fh:
+            for line in mcm_fh:
+                print(line.rstrip(), file=output_fh)
 
-    # fmesh tally cards : option added nov.14.2012
-    if group_upper_boundaries is not None:  # check if list is non-empty
-        group_upper_boundaries.reverse()
+    if not suppress_fmesh:
+        # fmesh tally cards : option added nov.14.2012
+        if group_upper_boundaries is not None:  # check if list is non-empty
+            group_upper_boundaries.reverse()
 
-    for i in range(maxgcm):
-        xmin_by_cm = globals()['cm_attributes']['xMinCm']
-        ymin_by_cm = globals()['cm_attributes']['yMinCm']
-        zmin_by_cm = globals()['cm_attributes']['zMinCm']
-        xmax_by_cm = globals()['cm_attributes']['xMaxCm']
-        ymax_by_cm = globals()['cm_attributes']['yMaxCm']
-        zmax_by_cm = globals()['cm_attributes']['zMaxCm']
-        ixfl_by_cm = globals()['cm_attributes']['ixfL']
-        jyfl_by_cm = globals()['cm_attributes']['jyfL']
-        kzfl_by_cm = globals()['cm_attributes']['kzfL']
-        # the actual printing for each fmesh
-        print("fmesh" + str(i + 1)+"4:n  origin=", end="", file=output_fh)
-        print(xmin_by_cm[i], ymin_by_cm[i], zmin_by_cm[i], file=output_fh)
-        print('     ', 'imesh=', xmax_by_cm[i],
-              'iints=', int(ixfl_by_cm[i]), file=output_fh)
-        print('     ', 'jmesh=', ymax_by_cm[i],
-              'jints=', int(jyfl_by_cm[i]), file=output_fh)
-        print('     ', 'kmesh=', zmax_by_cm[i],
-              'kints=', int(kzfl_by_cm[i]), file=output_fh)
+        for i in range(maxgcm):
+            xmin_by_cm = globals()['cm_attributes']['xMinCm']
+            ymin_by_cm = globals()['cm_attributes']['yMinCm']
+            zmin_by_cm = globals()['cm_attributes']['zMinCm']
+            xmax_by_cm = globals()['cm_attributes']['xMaxCm']
+            ymax_by_cm = globals()['cm_attributes']['yMaxCm']
+            zmax_by_cm = globals()['cm_attributes']['zMaxCm']
+            ixfl_by_cm = globals()['cm_attributes']['ixfL']
+            jyfl_by_cm = globals()['cm_attributes']['jyfL']
+            kzfl_by_cm = globals()['cm_attributes']['kzfL']
+            # the actual printing for each fmesh
+            print("fmesh" + str(i + 1)+"4:n  origin=", end="", file=output_fh)
+            print(xmin_by_cm[i], ymin_by_cm[i], zmin_by_cm[i], file=output_fh)
+            print('     ', 'imesh=', xmax_by_cm[i],
+                  'iints=', int(ixfl_by_cm[i]), file=output_fh)
+            print('     ', 'jmesh=', ymax_by_cm[i],
+                  'jints=', int(jyfl_by_cm[i]), file=output_fh)
+            print('     ', 'kmesh=', zmax_by_cm[i],
+                  'kints=', int(kzfl_by_cm[i]), file=output_fh)
 
-        # the emesh card
-        if not group_upper_boundaries:
-            print("      emesh=", end="", file=output_fh)
+            # the emesh card
+            if not group_upper_boundaries:
+                print("      emesh=", end="", file=output_fh)
+                for i in range(groups):
+                    print("? ", end="", file=output_fh)
+                print(" $ supply the",
+                      input_file.split('.')[0] +
+                      ".grp file and the '?' will go away!",
+                      end="", file=output_fh)
+                print(file=output_fh)
+            else:
+                group_string = "      emesh="
+                for i in range(groups):
+                    group_string += str(group_upper_boundaries[i]) + " "
+
+                print(textwrap.fill(group_string, width=80,
+                      subsequent_indent='            '), file=output_fh)
+
+            eint_string = "      eints="
             for i in range(groups):
-                print("? ", end="", file=output_fh)
-            print(" $ supply the",
-                  input_file.split('.')[0] +
-                  ".grp file and the '?' will go away!",
-                  end="", file=output_fh)
-            print(file=output_fh)
-        else:
-            group_string = "      emesh="
-            for i in range(groups):
-                group_string += str(group_upper_boundaries[i]) + " "
+                eint_string += "1 "
 
-            print(textwrap.fill(group_string, width=80,
+            print(textwrap.fill(eint_string, width=80,
                   subsequent_indent='            '), file=output_fh)
 
-        eint_string = "      eints="
-        for i in range(groups):
-            eint_string += "1 "
-
-        print(textwrap.fill(eint_string, width=80,
-              subsequent_indent='            '), file=output_fh)
-
-    # f4 tally cards
-    for i in range(1, maxgcm+1):
-        index = i - 1
-        print("c f"+str(i)+"4:n  ", end="", file=output_fh)
-        tally_string = "( ("
-        for m in range(1, maxmat+1):
-            tally_string += " "+str(m)
-        tally_string += " ) < "
-        tally_string += str(10000 + i) + "[0:" + \
-            str(fm_attributes['xFm'][index] - 1).ljust(4) + \
-            "0:" + str(fm_attributes['yFm'][index] - 1).ljust(4) + \
-            "0:" + str(fm_attributes['zFm'][index]-1) + "] < " + \
-            str(50000 + i) + " )"
-        print(tally_string, file=output_fh)
+        # f4 tally cards
+        for i in range(1, maxgcm+1):
+            index = i - 1
+            print("c f"+str(i)+"4:n  ", end="", file=output_fh)
+            tally_string = "( ("
+            for m in range(1, maxmat+1):
+                tally_string += " "+str(m)
+            tally_string += " ) < "
+            tally_string += str(10000 + i) + "[0:" + \
+                str(fm_attributes['xFm'][index] - 1).ljust(4) + \
+                "0:" + str(fm_attributes['yFm'][index] - 1).ljust(4) + \
+                "0:" + str(fm_attributes['zFm'][index]-1) + "] < " + \
+                str(50000 + i) + " )"
+            print(tally_string, file=output_fh)
+    else:
+        print("Suppressing fmesh tally from output", file=log_fh)
 
 
 def insert_kcode():
@@ -789,7 +789,7 @@ def insert_kcode():
             for line in kfile:
                 print(line, end="", file=output_fh)
     except IOError as e:  # noqa
-        print("no 'kcode' file detected, trying 'kcode.txt'", file=log_fh)
+        print("No 'kcode' file detected, trying 'kcode.txt'", file=log_fh)
         try:
             with open('kcode.txt') as kfile:
                 print("Appending contents of kcode.txt...", file=log_fh)
@@ -829,7 +829,46 @@ def insert_group_boundaries(file):
 
     return group_upper_boundaries
 
+
+def analyze_mcm_for_density(mcm_file):
+    """ Analyze mcm file for densities """
+    densities = []
+    with open(mcm_file) as mcm_fh:
+        for line in mcm_fh:
+            # line to parse below looks like
+            # density: 1.00 g/cc
+            if 'density:' in line:
+                densities.append(
+                    float(line.split(':')[1].split('g')[0].strip()))
+    return densities
+
+
+def parse_args():
+    """ Parse arguments from command line """
+    # Parse 'file' argument and force printing of help if no arguments called
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", '--file',
+                        help="Input: PENTRAN Input File to Process")
+    parser.add_argument("-lp", '--logprint', action="store_true",
+                        help="(Optional) Print log to file instead of stdout")
+    parser.add_argument("-mcm", '--gmixmatl',
+                        help="(Optional) Use GMIX Created"
+                        " Material Card for MCNP")
+    parser.add_argument("-nofm", '--nofmesh', action="store_true",
+                        help="Suppress FMESH tallies")
+
+    # Force call to help if no arguments given
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
+    args = parser.parse_args()
+    # End of argument parsing
+    return args
+
 # main script begin
+args = parse_args()
+instances = {}
+
 header()
 
 # deal with argparse args
@@ -846,6 +885,19 @@ else:
         print("Logging to: m2mc.log")
     print("Working with PENTRAN Input File:", args.file, file=log_fh)
     input_file = args.file
+
+    # handle mcm option
+    if args.gmixmatl is not None:
+        use_mcm = True
+        mcm_file = args.gmixmatl
+        print("Applying GMIX .mcm File:", args.gmixmatl, file=log_fh)
+    else:
+        use_mcm = False
+
+    if args.nofmesh:
+        suppress_fmesh = True
+    else:
+        suppress_fmesh = False
 
 input_fh = open(input_file, 'r')
 output_file = input_file.split('.')[0]+'.mc'
@@ -872,6 +924,15 @@ for line in input_fh:
 
 print("\nPENTRAN Instances Summary", file=log_fh)
 print("-"*80, end="", file=log_fh)
+
+# catch for inconsistencies, analyze mcm for densities
+if use_mcm:
+    densities = analyze_mcm_for_density(mcm_file)
+    try:
+        assert instances["maxmat"].value == len(densities)
+    except:
+        raise AssertionError("Mismatch between maxmat and materials in mcm")
+
 pretty_print_instances(instances)
 print_fido_string(fido_per_cm)
 
