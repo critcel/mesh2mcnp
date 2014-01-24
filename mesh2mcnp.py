@@ -52,23 +52,35 @@ def generate_instance(name, value):
 ### end of instance class
 
 
-# # auxilary functions
-# def pretty_print(var_str):
-#     print(var_str+':', len(globals()[var_str]), globals()[var_str],
-#           file=log_fh)
-#     print(file=log_fh)
+def construct_set_matl():
+    """ Construct global material set."""
+    if args.univmat is None:
+        maxmat = instances["maxmat"].value
+        set_matl = set([str(x) for x in range(maxmat)])
+    else:
+        set_matl = set(args.univmat)
+    return set_matl
 
 
 def table_print(dictionary, var_str, sub_vol_opt=False):
-    """ Prints global dictionary data to table,
-    sub_vol_opt handles case for printing material/sub-vol pairs
     """
+    Prints global dictionary data to table,
+    sub_vol_opt handles case for printing material/sub-vol pairs
+    and additional filters on material.
+    """
+
+    def mat_in_cm(mat, intersecting_matl):
+        """ Signature 'x' upon finding material in CM. """
+        if mat in intersecting_matl:
+            return 'X'
+        else:
+            return ' '
+
     table = []
     name_list = []
     for item in var_str.split():
         name_list.append(item)
         table.append(globals()[dictionary][item])
-        # table_length=len(globals()[dictionary][item])
     print_table = zip(*table)
 
     print(' C.M.', end="", file=log_fh)
@@ -77,50 +89,66 @@ def table_print(dictionary, var_str, sub_vol_opt=False):
     print(file=log_fh)
 
     cm_count = 0
-    for item in print_table:
+    for categories in print_table:
         cm_count += 1
         mat_once = True
 
-        # print the CM index
-        print('{0:5d}'.format(cm_count), end="", file=log_fh)
-
-        for sub_item in item:
-            # this counts on the fact that both 'Mat' and 'SubVol' are in dict
-            if sub_vol_opt:
+        if sub_vol_opt:
+            for category in categories:
+                # when 'Mat' and 'SubVol' both in dict
                 if mat_once and ('Mat' in globals()[dictionary] or
                                  'SubVol' in globals()[dictionary]):
-                    # print the mat sub_vol pair
-                    print(' CM, Mat-SubVol    Pair: ', end="", file=log_fh)
-                    for mat, sub_vol in \
-                        zip(globals()[dictionary]['Mat'][cm_count-1],
-                            globals()[dictionary]['SubVol'][cm_count-1]):
-                            print('[{:>4g}'.format(int(mat)) +
-                                  ',{0:>10.{1}f} ]'.format(float(sub_vol), 4),
-                                  end="", file=log_fh)
 
-                    vol = globals()[dictionary]['Vol'][cm_count-1] \
-                        / Decimal(100)
-                    # print the mat sub_vol(%) pair
-                    print('\n      CM, Mat-SubVol(%) Pair: ', end="",
-                          file=log_fh)
-                    for mat, sub_vol in \
-                        zip(globals()[dictionary]['Mat'][cm_count-1],
-                            globals()[dictionary]['SubVol'][cm_count-1]):
-                            print('[{:>4g}'.format(int(mat)) +
-                                  ',{0:>10.{1}f}%]'
-                                  .format(float(sub_vol)/float(vol), 4),
-                                  end="", file=log_fh)
-                    # print the total volume
-                    print(' Volume: {0:8.{1}f}'.format(float(
-                        globals()[dictionary]['Vol'][cm_count-1]), 4),
-                        end="", file=log_fh)
+                    set_matl_in_cm = globals()[dictionary]['Mat'][cm_count-1]
+                    set_subvol_in_cm = \
+                        globals()[dictionary]['SubVol'][cm_count-1]
+                    set_vol_in_cm = globals()[dictionary]['Vol'][cm_count-1]
+                    cm_vol = set_vol_in_cm / Decimal(100)
+                    set_matl = construct_set_matl()
+                    matl_subvol = zip(set_matl_in_cm, set_subvol_in_cm)
+                    intersecting_matl = set_matl_in_cm.intersection(set_matl)
 
-                    mat_once = False
-            else:
-                print('   {0:8.{1}f}'.format(float(sub_item), 4),
+                    if (set_matl_in_cm.intersection(set_matl)):
+                        # print the CM index
+                        print('{0:5d}'.format(cm_count), end="", file=log_fh)
+
+                        # print the mat sub_vol pair
+                        print(' CM, Mat-SubVol(cc)Pair: ', end="", file=log_fh)
+                        for mat, sub_vol in matl_subvol:
+                                x_marker = mat_in_cm(mat, intersecting_matl)
+                                print('[' + x_marker, end="", file=log_fh)
+                                print('{:>3g}'.format(int(mat)) +
+                                      ',{:>10.4f} ]'.format(float(sub_vol)),
+                                      end="", file=log_fh)
+
+                        # print the mat sub_vol(%) pair
+                        print('\n      CM, Mat-SubVol(%) Pair: ', end="",
+                              file=log_fh)
+                        for mat, sub_vol in matl_subvol:
+                                x_marker = mat_in_cm(mat, intersecting_matl)
+                                print('[' + x_marker, end="", file=log_fh)
+                                print('{:>3g}'.format(int(mat)) +
+                                      ',{:>10.4f}%]'
+                                      .format(float(sub_vol)/float(cm_vol)),
+                                      end="", file=log_fh)
+
+                        # print the total volume
+                        print('\n      Total Volume: {:8.4f}'.format(
+                            float(set_vol_in_cm)),
+                            end="", file=log_fh)
+
+                        print(file=log_fh)
+                        mat_once = False
+        else:
+            # print the CM index
+            print('{0:5d}'.format(cm_count), end="", file=log_fh)
+
+            for category in categories:
+
+                print('   {0:8.{1}f}'.format(float(category), 4),
                       end="", file=log_fh)
 
-        print(file=log_fh)
+            print(file=log_fh)
     print(file=log_fh)
 
 
@@ -546,13 +574,19 @@ def produce_matl_cell():
             string = str(i).ljust(5)
             string += str(i).ljust(4)
             string += str(densities[i-1]*-1).ljust(10)
-            string += "  -99990   u="
+            string += "  -99990 "
+            if args.unitvol:
+                string += "  vol=1.00  "
+            string += "  u="
             string += str(i).ljust(4) + "  imp:n=1 $ material " + str(i)
             matlCell.append(string)
     else:
         for i in range(1, maxmat + 1):
             string = str(i).ljust(5)
-            string += str(i).ljust(4) + "1.0  -99990   u="
+            string += str(i).ljust(4) + "1.0  -99990 "
+            if args.unitvol:
+                string += "  vol=1.00  "
+            string += "  u="
             string += str(i).ljust(4) + "  imp:n=1 $ material " + str(i)
             matlCell.append(string)
     return matlCell
@@ -849,41 +883,64 @@ def write_surface_and_data(group_upper_boundaries):
             print(textwrap.fill(eint_string, width=80,
                   subsequent_indent='            '), file=output_fh)
 
-        # f4 tally cards
-        for i in range(1, maxgcm+1):
-            index = i - 1
-            print("c f"+str(i)+"4:n  ", end="", file=output_fh)
-            tally_string = "( ("
-            for m in range(1, maxmat+1):
-                tally_string += " "+str(m)
-            tally_string += " ) < "
-            tally_string += str(10000 + i) + "[0:" + \
-                str(fm_attributes['xFm'][index] - 1).ljust(4) + \
-                "0:" + str(fm_attributes['yFm'][index] - 1).ljust(4) + \
-                "0:" + str(fm_attributes['zFm'][index]-1) + "] < " + \
-                str(50000 + i) + " )"
-            print(tally_string, file=output_fh)
     else:
         print("Suppressing fmesh tally from output", file=log_fh)
 
+    # f4 tally cards by selected material
+    for i in construct_set_matl():
+        i = int(i)
+        print("f"+str(i)+"4:n  " + str(i), end="\n", file=output_fh)
+        if args.tallymul is not None:
+            print("fm"+str(i)+"4   " +
+                  args.tallymul, end="\n", file=output_fh)
 
-def insert_kcode():
+    # f4 universe tally cards by coarse mesh
+    for i in range(1, maxgcm+1):
+        # index = i - 1
+        print("f"+str(i+1000)+"4:n  ", end="", file=output_fh)
+        tally_string = "( ("
+
+        #for m in range(1, maxmat+1):
+        #    tally_string += " "+str(m)
+        tally_string += str(' '.join(list(construct_set_matl())))
+        tally_string += ") < "
+
+        # SAVE
+        # tally_string += str(10000 + i) + "[0:" + \
+        #     str(fm_attributes['xFm'][index] - 1).ljust(4) + \
+        #     "0:" + str(fm_attributes['yFm'][index] - 1).ljust(4) + \
+        #     "0:" + str(fm_attributes['zFm'][index]-1) + "] < " + \
+        #     str(50000 + i) + " )"
+
+        tally_string += str(10000 + i) + " < " + \
+            str(50000 + i) + " )"
+        print(tally_string, file=output_fh)
+
+        if args.tallymul is not None:
+            print("fm"+str(i+1000)+"4   " +
+                  args.tallymul, end="\n", file=output_fh)
+
+
+def insert_file(keyword):
     """
-    This inserts 'kcode' or 'kcode.txt' into the MCNP data block.
+    This inserts KEYWORD or KEYWORD.txt into the MCNP data block.
+    Options: {sdef/kcode}
     """
-    print("c if kcode or kcode.txt file exists,"
+    print("c if " + keyword + " or " + keyword + ".txt file exists,"
           " then its contents will be inserted here", file=output_fh)
 
     try:
-        with open('kcode') as kfile:
-            print("Appending contents of kcode...", file=log_fh)
+        with open(keyword) as kfile:
+            print("Appending contents of " + keyword + "...", file=log_fh)
             for line in kfile:
                 print(line, end="", file=output_fh)
     except IOError as e:  # noqa
-        print("No 'kcode' file detected, trying 'kcode.txt'", file=log_fh)
+        print("No '" + keyword + "' file detected, trying '" + keyword +
+              ".txt'", file=log_fh)
         try:
-            with open('kcode.txt') as kfile:
-                print("Appending contents of kcode.txt...", file=log_fh)
+            with open(keyword + '.txt') as kfile:
+                print("Appending contents of " + keyword +
+                      ".txt...", file=log_fh)
                 for line in kfile:
                     print(line, end="", file=output_fh)
         except IOError as e2:  # noqa
@@ -947,14 +1004,21 @@ def parse_args():
     # Parse 'file' argument and force printing of help if no arguments called
     parser = argparse.ArgumentParser()
     parser.add_argument("-f", '--file',
-                        help="Input: PENTRAN Input File to Process")
+                        help="Input: PENTRAN input file to process")
     parser.add_argument("-lp", '--logprint', action="store_true",
                         help="(Optional) Print log to file instead of stdout")
     parser.add_argument("-mcm", '--gmixmatl',
-                        help="(Optional) Use GMIX Created"
-                        " Material Card for MCNP")
+                        help="(Optional) Use GMIX created"
+                        " material card for MCNP")
+    parser.add_argument("-f4mul", '--tallymul',
+                        help="(Optional) Insert fm tally multiplier")
     parser.add_argument("-nofm", '--nofmesh', action="store_true",
                         help="Suppress FMESH tallies")
+    parser.add_argument("-utmat", '--univmat', nargs='+', type=str,
+                        help="Filter Tallies "
+                        " (e.g. only materials 8,2,19 -utmat 8 2 19)")
+    parser.add_argument("-unit", '--unitvol', action="store_true",
+                        help="Set vol=1.00 on material/universe cell cards")
 
     # Force call to help if no arguments given
     if len(sys.argv) == 1:
@@ -1050,7 +1114,8 @@ if __name__ == "__main__":
 
     group_upper_boundaries = insert_group_boundaries(input_file)
     write_surface_and_data(group_upper_boundaries)
-    insert_kcode()
+    insert_file('sdef')
+    insert_file('kcode')
 
     print("\nPhysical Dimension Summary", file=log_fh)
     print("-"*80, file=log_fh)

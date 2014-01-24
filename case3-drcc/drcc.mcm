@@ -1,0 +1,170 @@
+c
+c        DRCC neutron Counter
+c
+c Material    Mat     Target(cm3)     Density
+c   name      No.      volume          g/cc
+c ----------  ------  -------------    -------
+c PuLT6p240     1      0.00              19.6
+c HEU90p        2      0.00              19.4
+c Polyehtylene  3      2.426E4           0.95
+c Cd            4      0.0000            8.65
+c Al            5      1.17E3            2.70
+c Cargo_Steel   6      0.00              2.62
+c Steel-air     7      0.00              1.572
+c he3-4atm      8      1.62E3            1.3697E-3
+c Water         9      0.000             1.00
+c Water-halfd   10     0.000             0.50
+c Water-third   11     0.000             0.333
+c Air-humid     12     8.6E3             1.2028E-3
+c Asphalt       13     0.000             2.115
+c Concrete      14     0.000             2.30
+c ObrienDirt    15     0.000             1.7
+c SS304         16     0.000             7.92
+c DowEFoam221   17     0.000             0.035
+c
+c     MCNP Material Data
+c     (See MCNP Manual APPENDIX G)
+c
+c     -- Mat   1  Pu(94%)-20yrs   in at/b-cm --
+c         density: 1.960E+01 g/cc
+m1
+      94239.70c   4.6272E-02
+      94240.70c   2.9229E-03
+      94241.70c   8.0801E-05
+      94242.70c   9.0133E-06
+      94238.70c   1.3885E-05
+      95241.70c   4.9998E-05
+      92235.70c   1.3303E-05
+c
+c     -- Mat   2  heu-90pct       in at/b-cm --
+c         density: 1.940E+01 g/cc
+m2
+      92234.70c   4.1436E-04
+      92235.70c   4.4739E-02
+      92236.70c   3.2669E-04
+      92238.70c   4.1720E-03
+c
+c     -- Mat   3  polyethylene    in at/b-cm --
+c         density: 9.500E-01 g/cc
+m3
+      1001.70c   1.1768E-02
+      1002.70c   1.3535E-06
+      6000.70c   4.0774E-02
+c
+c     -- Mat   4  cd              in at/b-cm --
+c         density: 8.650E+00 g/cc
+m4
+      48112.70c   4.6340E-02
+      5010.70c   9.5881E-09
+      5011.70c   3.8596E-08
+c
+c     -- Mat   5  aluminum        in at/b-cm --
+c         density: 2.700E+00 g/cc
+m5
+      13027.70c  6.0263E-02 
+c
+c     -- Mat   6  cargo-steel     in at/b-cm --
+c         density: 2.620E+00 g/cc
+m6
+      26054.70c   1.6304E-03
+      26056.70c   2.5783E-02
+      26057.70c   6.1846E-04
+      26058.70c   7.8584E-05
+      6000.70c   6.5746E-04
+c
+c     -- Mat   7  steel-air       in at/b-cm --
+c         density: 1.572E+00 g/cc
+m7
+      26054.70c   9.7726E-04
+      26056.70c   1.5455E-02
+      26057.70c   3.7070E-04
+      26058.70c   4.7103E-05
+      6000.70c   3.9408E-04
+      8016.70c   1.3568E-05
+      7014.70c   5.2102E-05
+c
+c     -- Mat   8  he3             in at/b-cm --
+c         density: 1.370E-03 g/cc
+m8
+      2003.70c   2.4868E-04
+      6000.70c   1.6997E-06
+      8016.70c   3.4010E-06
+c
+c     -- Mat   9  water-fullden   in at/b-cm --
+c         density: 1.000E+00 g/cc
+m9
+      1001.70c   6.6873E-02
+      8016.70c   3.3437E-02
+c
+c     -- Mat  10  water-halfden   in at/b-cm --
+c         density: 5.000E-01 g/cc
+m10
+      1001.70c   3.3437E-02
+      8016.70c   1.6718E-02
+c
+c     -- Mat  11  water-thirdden  in at/b-cm --
+c         density: 3.330E-01 g/cc
+m11
+      1001.70c      2.2269E-02
+      8016.70c      1.1134E-02
+c
+c     -- Mat  12  Air-humid       in at/b-cm --
+c         density: 1.203E-03 g/cc
+m12
+      7014.70c      3.9779E-05
+      8016.70c      1.0384E-05
+      1001.70c      1.2218E-06
+c
+c     -- Mat  13  Asphalt         in at/b-cm --
+c         density: 2.115E+00 g/cc
+m13
+      1001.70c      1.3902E-01
+      13027.70c      6.6088E-03
+      6000.70c      4.2418E-02
+      8016.70c      2.7871E-02
+c
+c     -- Mat  14  Concrete        in at/b-cm --
+c         density: 2.300E+00 g/cc
+m14
+      1001.70c      1.3743E-02
+      14028.70c      1.6620E-02
+      8016.70c      4.6069E-02
+      13027.70c      1.7454E-03
+      11023.70c      1.7472E-03
+      20040.70c      1.5206E-03
+      26054.70c      2.0132E-05
+      26056.70c      3.1825E-04
+      26057.70c      7.8334E-06
+      26058.70c      1.0042E-06
+c
+c     -- Mat  15  ObrDirt         in at/b-cm --
+c         density: 1.700E+00 g/cc
+m15
+      1001.70c      9.7777E-03
+      14028.70c      1.1574E-02
+      8016.70c      3.4820E-02
+      13027.70c      4.8888E-03
+c
+c     -- Mat  16  SS304           in at/b-cm --
+c         density: 7.920E+00 g/cc
+m16
+      26054.70c      3.4414E-03
+      26056.70c      5.4403E-02
+      26057.70c      1.3391E-03
+      26058.70c      1.7165E-04
+      24050.70c      7.5823E-04
+      24052.70c      1.4603E-02
+      24053.70c      1.6558E-03
+      24054.70c      4.1128E-04
+      28058.70c      5.2705E-03
+      28060.70c      2.0149E-03
+      28061.70c      8.7229E-05
+      28062.70c      2.7715E-04
+      28064.70c      7.0240E-05
+      25055.70c      1.7363E-03
+c
+c     -- Mat  17  DowEFm221       in at/b-cm --
+c         density: 3.500E-02 g/cc
+m17
+      1001.70c      3.0054E-03
+      6000.70c      1.5027E-03
