@@ -10,7 +10,7 @@ Keeping your local MESH2MCNP up-to-date
 
 ```
 cd mesh2mcnp/
-git pull # this will work if you have not migrated anything
+git pull # this will work if you have not made changes to targeted files in the local clone
 ```
 
 If `git pull` does not work it is because there are conflicting files, if you do not care for this, just issue `git stash` prior to `git pull`, and that will tuck away the problem files (you can recover stashed files too).
