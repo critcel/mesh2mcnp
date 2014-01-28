@@ -1,6 +1,8 @@
 MESH2MCNP
 =========
 
+**Primary Developers: K. Manalo, C. Yi, G. Sjoden**
+
 Mesh conversion tool using the PENMSHXP/PENTRAN geometry format
 
 MESH2MCNP matches discrete geometry so that you cannot blame the Sn meshing in your Monte Carlo analysis.
