@@ -23,13 +23,14 @@ Example DRCC Problem
 --------------------
 
 # Continuous Option
-To run DRCC example, and generate a `.mc` file
+To run DRCC example, and generate a `.mc` file (continuous)
 ```
 cd case3-drcc
 python ../mesh2mcnp.py -f drcc_out.pen -mcm drcc.mcm -nofm -lp
 cp drcc_out.mc drcc_out_continuous.mc
 ```
 # Multigroup Option
+To run DRCC example, and generate a `.mc` file (xsmcnp/multigroup)
 ```
 cd case3-drcc
 python ../mesh2mcnp.py -f drcc_out.pen -mcm drcc.mcm -nofm -lp
