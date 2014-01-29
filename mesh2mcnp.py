@@ -667,6 +667,7 @@ def header():
     print(" ")
     print("                          MESH2MCNP")
     print("                         Version 2.1")
+    print("                         Version 2.0")
     print("                   By  K. Manalo,  C. Yi")
     print("                         &  G. Sjoden")
     print("                     Georgia Tech / CRITCEL")
