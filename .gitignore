@@ -3,4 +3,4 @@ bug-case*
 *.ref
 *.log
 *.pyc
-test/
+test*/

@@ -27,42 +27,177 @@ import sys
 from decimal import *  # noqa
 
 
-### defining an instance class
-class Instance:
+### defining an instance dictionary class
+class Instance(dict):
     """
     Instance class
     """
-    def __init__(self, value):
-        self.value = value
+    def __init__(self, filename):
+        self._dict = {}
+        self.filename = filename
+        self.f = open(filename, 'r')
 
-    def stringArgs(self, prestring):
+    def add(self, id, val):
+        id = id.strip()
+        self._dict[id] = val
+
+    def __getitem__(self, key):
+        return self._dict[key]
+
+    def __getattr__(self, attr):
+        return self[attr]
+
+    def analyze_geometry_block(self, pen):
+        """
+        Analyze the geometry block in the pen file object, depends on
+        fine_check, mesh_boundary_check, and fido_grab.
+
+        Returns 'fido_per_cm'.
+        """
+        pline = ""
+        fido_per_cm = []
+        for subline in pen:
+            if "T" not in subline:
+                if "/" not in subline:
+                    if "=" not in subline:
+                        pline += " " + subline.replace("\n", "").strip()
+                    else:
+                        self.fine_check(pline)
+                        self.mesh_boundary_check(pline)
+                        # the pulling of FM per CM is actually done here
+                        fido_per_cm = self.fido_grab(pline, fido_per_cm)
+                        pline = ""
+                        subline = subline.replace("\n", "").strip()
+                        pline = "\n" + subline
+            else:
+                break
+        return fido_per_cm
+
+    def process(self):
+        # GATHER INFORMATION
+        # initial search on fm, cm, geometry information in .pen file
+        for line in self.f:
+
+            # identify the maximum number of CM
+            self.cm_check(self.f, line)
+
+            # identify the maximum number of grps, materials
+            self.grp_matl_check(self.f, line)
+
+            # examine BLOCK II section
+            if "BLOCK II(geometry)" in line:
+                self._dict['fido_per_cm'] = self.analyze_geometry_block(self.f)
+
+            # identify boundary conditions
+            self.bdy_check(self.f, line)
+
+    def stringArgs(self, prestring, id):
         """
         Return prefix 'prestring' + str(instance)
         """
-        return prestring+str(self.value)
+        return prestring + str(self._dict[id])
 
+    def fido_grab(self, line, fido_per_cm):
+        """
+        Each call to this function pulls off the FIDO string for each coarse
+        mesh.  fido_per_cm needs to be instantiated before calling.
 
-def generate_instance(name, value):
-    """
-    Create Instance using PENTRAN keywords
-    """
-    myName = name.strip()
-    myValue = value
-    instances[myName] = Instance(myValue)
+        Returns 'fido_per_cm'
+        """
+        count = 0
+        if "nmattp" in line:
+
+            line_list = line.split('=')  # clean out the '=' sign
+            line_list.pop(0)             # pop 'nmattp' 1st item off
+
+            string = line_list.pop()
+            line_list = string.split()   # the number string should be split
+            int(line_list.pop(0))        # we need to pop this CM value off
+            # lump the fine mesh fido values back together in one string
+            fido_string = ' '.join(line_list)
+            fido_per_cm.append(fido_string)
+
+            count += 1
+
+        return fido_per_cm
+
+    def fine_check(self, line):
+        """ Generate instances for variables having the word 'fine'. """
+        if "fine" in line:
+            line_list = line.split('=')
+            val = line_list.pop().replace("\n", "")
+            type = line_list.pop()
+            self.add(type, val)
+
+    def mesh_boundary_check(self, line):
+        """ Generate instances for variables having the word 'mesh'. """
+        if "mesh" in line:
+            line_list = line.split('=')
+            val = line_list.pop().replace("\n", "")
+            type = line_list.pop()
+            self.add(type, val)
+
+    def cm_check(self, f, line):
+        """ Checks for 'maxgcm' and generates Instance """
+        if "maxgcm" in line:
+            values = next(f)               # grab the next line !
+            values = values.split()
+            maxgcm = int(values[2])        # pull the 3rd value for maxgcm
+            self.add("maxgcm", maxgcm)
+
+    def grp_matl_check(self, f, line):
+        if "maxmat" in line:
+            values = next(f)               # grab the next line !
+            values = values.split()
+            maxgrp = int(values[0])
+            maxmat = int(values[4])        # pull the 5th value for maxgcm
+            self.add("maxmat", maxmat)
+            self.add("maxgrp", maxgrp)
+
+    def bdy_check(self, f, line):
+        """ Checks for PENTRAN keywords:
+        ibback, ibfrnt, jbeast, jbwest, kbsout, kbnort
+        and returns them to Instances.
+        """
+        if "ibback" in line:
+            values = line.split('=')
+            ibback = values[1]
+            self.add("ibback", ibback)
+        if "ibfrnt" in line:
+            values = line.split('=')
+            ibfrnt = values[1]
+            self.add("ibfrnt", ibfrnt)
+        if "jbeast" in line:
+            values = line.split('=')
+            jbeast = values[1]
+            self.add("jbeast", jbeast)
+        if "jbwest" in line:
+            values = line.split('=')
+            jbwest = values[1]
+            self.add("jbwest", jbwest)
+        if "kbsout" in line:
+            values = line.split('=')
+            kbsout = values[1]
+            self.add("kbsout", kbsout)
+        if "kbnort" in line:
+            values = line.split('=')
+            kbnort = values[1]
+            self.add("kbnort", kbnort)
+
 ### end of instance class
 
 
-def construct_set_matl():
+def construct_set_matl(instances):
     """ Construct global material set."""
     if args.univmat is None:
-        maxmat = instances["maxmat"].value
+        maxmat = instances['maxmat']
         set_matl = set([str(x) for x in range(maxmat)])
     else:
         set_matl = set(args.univmat)
     return set_matl
 
 
-def table_print(dictionary, var_str, sub_vol_opt=False):
+def table_print(instances, dictionary, var_str, sub_vol_opt=False):
     """
     Prints global dictionary data to table,
     sub_vol_opt handles case for printing material/sub-vol pairs
@@ -80,7 +215,7 @@ def table_print(dictionary, var_str, sub_vol_opt=False):
     name_list = []
     for item in var_str.split():
         name_list.append(item)
-        table.append(globals()[dictionary][item])
+        table.append(dictionary[item])
     print_table = zip(*table)
 
     print(' C.M.', end="", file=log_fh)
@@ -96,15 +231,15 @@ def table_print(dictionary, var_str, sub_vol_opt=False):
         if sub_vol_opt:
             for category in categories:
                 # when 'Mat' and 'SubVol' both in dict
-                if mat_once and ('Mat' in globals()[dictionary] or
-                                 'SubVol' in globals()[dictionary]):
+                if mat_once and ('Mat' in dictionary or
+                                 'SubVol' in dictionary):
 
-                    set_matl_in_cm = globals()[dictionary]['Mat'][cm_count-1]
+                    set_matl_in_cm = dictionary['Mat'][cm_count-1]
                     set_subvol_in_cm = \
-                        globals()[dictionary]['SubVol'][cm_count-1]
-                    set_vol_in_cm = globals()[dictionary]['Vol'][cm_count-1]
+                        dictionary['SubVol'][cm_count-1]
+                    set_vol_in_cm = dictionary['Vol'][cm_count-1]
                     cm_vol = set_vol_in_cm / Decimal(100)
-                    set_matl = construct_set_matl()
+                    set_matl = construct_set_matl(instances)
                     matl_subvol = zip(set_matl_in_cm, set_subvol_in_cm)
                     intersecting_matl = set_matl_in_cm.intersection(set_matl)
 
@@ -152,111 +287,19 @@ def table_print(dictionary, var_str, sub_vol_opt=False):
     print(file=log_fh)
 
 
-def fido_grab(line, fido_per_cm):
-    """
-    Each call to this function pulls off the FIDO string for each coarse mesh.
-    fido_per_cm needs to be instantiated before calling.
-
-    Returns 'fido_per_cm'
-    """
-    count = 0
-    if "nmattp" in line:
-
-        line_list = line.split('=')  # clean out the '=' sign
-        line_list.pop(0)             # pop 'nmattp' 1st item off
-
-        string = line_list.pop()
-        line_list = string.split()   # the number string should be split
-        int(line_list.pop(0))        # we need to pop this CM value off
-        # lump the fine mesh fido values back together in one string
-        fido_string = ' '.join(line_list)
-        fido_per_cm.append(fido_string)
-
-        count += 1
-
-    return fido_per_cm
-
-
-def fine_check(line):
-    """ Generate instances for variables having the word 'fine'. """
-    if "fine" in line:
-        line_list = line.split('=')
-        val = line_list.pop().replace("\n", "")
-        type = line_list.pop()
-        generate_instance(type, val)
-
-
-def mesh_boundary_check(line):
-    """ Generate instances for variables having the word 'mesh'. """
-    if "mesh" in line:
-        line_list = line.split('=')
-        val = line_list.pop().replace("\n", "")
-        type = line_list.pop()
-        generate_instance(type, val)
-
-
-def cm_check(f, line):
-    """ Checks for 'maxgcm' and generates Instance """
-    if "maxgcm" in line:
-        values = next(f)               # grab the next line !
-        values = values.split()
-        maxgcm = int(values[2])        # pull the 3rd value for maxgcm
-        generate_instance("maxgcm", maxgcm)
-
-
-def grp_matl_check(f, line):
-    if "maxmat" in line:
-        values = next(f)               # grab the next line !
-        values = values.split()
-        maxgrp = int(values[0])
-        maxmat = int(values[4])        # pull the 5th value for maxgcm
-        generate_instance("maxmat", maxmat)
-        generate_instance("maxgrp", maxgrp)
-
-
-def bdy_check(f, line):
-    """ Checks for PENTRAN keywords:
-    ibback, ibfrnt, jbeast, jbwest, kbsout, kbnort
-    and returns them to Instances.
-    """
-    if "ibback" in line:
-        values = line.split('=')
-        ibback = values[1]
-        generate_instance("ibback", ibback)
-    if "ibfrnt" in line:
-        values = line.split('=')
-        ibfrnt = values[1]
-        generate_instance("ibfrnt", ibfrnt)
-    if "jbeast" in line:
-        values = line.split('=')
-        jbeast = values[1]
-        generate_instance("jbeast", jbeast)
-    if "jbwest" in line:
-        values = line.split('=')
-        jbwest = values[1]
-        generate_instance("jbwest", jbwest)
-    if "kbsout" in line:
-        values = line.split('=')
-        kbsout = values[1]
-        generate_instance("kbsout", kbsout)
-    if "kbnort" in line:
-        values = line.split('=')
-        kbnort = values[1]
-        generate_instance("kbnort", kbnort)
-
-
-def calc_fm_per_cm():
+def calc_fm_per_cm(instances):
     """
     Calculate Fine Mesh per Coarse Mesh.
 
     Returns 'fm_attributes'.
     """
+
     print("\nCalculating number of fine meshes per coarse mesh:", file=log_fh)
     print("-"*80, file=log_fh)
     # maxgcm = instances["maxgcm"].value
-    ixL = instances["ixfine"].value.split()
-    jyL = instances["jyfine"].value.split()
-    kzL = instances["kzfine"].value.split()
+    ixL = instances['ixfine'].split()
+    jyL = instances['jyfine'].split()
+    kzL = instances['kzfine'].split()
     ixL = [int(val) for val in ixL]
     jyL = [int(val) for val in jyL]
     kzL = [int(val) for val in kzL]
@@ -287,7 +330,7 @@ def calc_fm_per_cm():
     return fm_attributes
 
 
-def calc_boundary_per_cm(xFm, yFm, zFm):
+def calc_boundary_per_cm(xFm, yFm, zFm, instances):
     """
     Collect physical boundaries into six 1D arrays for each coarse mesh.
     """
@@ -302,9 +345,9 @@ def calc_boundary_per_cm(xFm, yFm, zFm):
     zMinCm = []
     zMaxCm = []
     zFmDimL = []
-    xmeshL = instances["xmesh"].value.split()
-    ymeshL = instances["ymesh"].value.split()
-    zmeshL = instances["zmesh"].value.split()
+    xmeshL = instances['xmesh'].split()
+    ymeshL = instances['ymesh'].split()
+    zmeshL = instances['zmesh'].split()
     x_dim_span = len(xmeshL) - 1
     y_dim_span = len(ymeshL) - 1
     z_dim_span = len(zmeshL) - 1
@@ -328,9 +371,9 @@ def calc_boundary_per_cm(xFm, yFm, zFm):
                 zFmDimL.append(Decimal((zMaxCm[idx] - zMinCm[idx])) /
                                Decimal(zFm[idx]))
 
-    ixfL = instances["ixfine"].value.split()
-    jyfL = instances["jyfine"].value.split()
-    kzfL = instances["kzfine"].value.split()
+    ixfL = instances['ixfine'].split()
+    jyfL = instances['jyfine'].split()
+    kzfL = instances['kzfine'].split()
 
     ixfL = [int(i) for i in ixfL]
     jyfL = [int(i) for i in jyfL]
@@ -349,7 +392,7 @@ def calc_boundary_per_cm(xFm, yFm, zFm):
     return cm_attributes
 
 
-def produce_surface_rpp(cm_attributes):
+def produce_surface_rpp(cm_attributes, instances):
 
     xMinCm = cm_attributes['xMinCm']
     xMaxCm = cm_attributes['xMaxCm']
@@ -434,17 +477,17 @@ def produce_surface_rpp(cm_attributes):
     zmin_rpp_string = ""
     zmax_rpp_string = ""
 
-    if "1" in instances["ibback"].value:
+    if "1" in instances['ibback']:
         xmin_rpp_string = "*"
-    if "1" in instances["ibfrnt"].value:
+    if "1" in instances['ibfrnt']:
         xmax_rpp_string = "*"
-    if "1" in instances["jbeast"].value:
+    if "1" in instances['jbeast']:
         ymin_rpp_string = "*"
-    if "1" in instances["jbwest"].value:
+    if "1" in instances['jbwest']:
         ymax_rpp_string = "*"
-    if "1" in instances["kbsout"].value:
+    if "1" in instances['kbsout']:
         zmin_rpp_string = "*"
-    if "1" in instances["kbnort"].value:
+    if "1" in instances['kbnort']:
         zmax_rpp_string = "*"
 
     rpp_list.append("c asterisk indicates reflected boundaries")
@@ -565,11 +608,11 @@ def process_pfm_string(fido_string):
 
 
 # cell card production routines
-def produce_matl_cell():
-    maxmat = instances["maxmat"].value
+def produce_matl_cell(instances):
+    maxmat = instances['maxmat']
     maxmat = int(maxmat)
     matlCell = []
-    if use_mcm:
+    if args.mcm_use:
         for i in range(1, maxmat + 1):
             string = str(i).ljust(5)
             string += str(i).ljust(4)
@@ -596,20 +639,21 @@ def pretty_print_instances(instances):
     """
     Show the instances collected from the .pen file and log
     """
+
     print(file=log_fh)
     itemString = ""
-    for item in instances:
+    for item in instances._dict:
         prestring = str(item) + "--> "
         if "mesh" in str(item):
-            meshString = instances[item].stringArgs(prestring)+" "
+            meshString = instances.stringArgs(prestring, item)+" "
             print(textwrap.fill(meshString, width=80, subsequent_indent=' '),
                   file=log_fh)
         elif "fine" in str(item):
-            fineString = instances[item].stringArgs(prestring)+" "
+            fineString = instances.stringArgs(prestring, item)+" "
             print(textwrap.fill(fineString, width=80, subsequent_indent=' '),
                   file=log_fh)
         else:
-            itemString += instances[item].stringArgs(prestring) + " "
+            itemString += instances.stringArgs(prestring, item) + " "
 
     print(textwrap.fill(itemString, width=80, subsequent_indent=' '),
           file=log_fh)
@@ -622,41 +666,16 @@ def header():
     """
     print(" ")
     print("                          MESH2MCNP")
-    print("                         Version 2.0")
-    print("                        By  K. Manalo")
+    print("                         Version 2.1")
+    print("                   By  K. Manalo,  C. Yi")
+    print("                         &  G. Sjoden")
     print("                     Georgia Tech / CRITCEL")
-    print("                          Jan   2014")
+    print("                          Feb   2014")
     print(" ")
 
 
-def analyze_geometry_block(pen):
-    """
-    Analyze the geometry block in the pen file, depends on
-    fine_check, mesh_boundary_check, and fido_grab.
-
-    Returns 'fido_per_cm'.
-    """
-    pline = ""
-    fido_per_cm = []
-    for subline in pen:
-        if "T" not in subline:
-            if "/" not in subline:
-                if "=" not in subline:
-                    pline += " " + subline.replace("\n", "").strip()
-                else:
-                    fine_check(pline)
-                    mesh_boundary_check(pline)
-                    # the pulling of FM per CM is actually done here
-                    fido_per_cm = fido_grab(pline, fido_per_cm)
-                    pline = ""
-                    subline = subline.replace("\n", "").strip()
-                    pline = "\n" + subline
-        else:
-            break
-    return fido_per_cm
-
-
 def print_fido_string(fido_per_cm):
+
     print("Printing FIDO strings for each coarse mesh"
           " (output may be truncated):", file=log_fh)
     print("-"*80, file=log_fh)
@@ -672,31 +691,31 @@ def print_fido_string(fido_per_cm):
             string = ""
 
 
-def write_cell_card():
+def write_cell_card(instances):
     print("Printing cell card", file=log_fh)
 
     print("c MESH2MCNP MCNP Input Generator, Date generated: ",
           datetime.date.today(), file=output_fh)
     print("c input deck generated from PENTRAN input:",
-          input_file, file=output_fh)
+          args.input_file, file=output_fh)
     ### cell cards
     print("c\nc cell cards -----\n" +
           "c description: each material\n" +
           "c   is assigned to a matching cell number\n" +
           "c   and matching universe (same as matid)\n" +
           "c   inside of the global rpp", file=output_fh)
-    if use_mcm:
+    if args.mcm_use:
         print("c Using densities parsed from " + mcm_file, file=output_fh)
-    matlCell = produce_matl_cell()
+    matlCell = produce_matl_cell(instances)
     for cell in matlCell:
             print(cell, file=output_fh)
 
-    print("c\nc cells 10001 to", str(10000+len(fido_per_cm)),
+    print("c\nc cells 10001 to", str(10000+len(instances['fido_per_cm'])),
           " describe a cartesian f.m. lattice in each coarse mesh\nc",
           file=output_fh)
 
 
-def write_cell_lattice(maxmat, fido_per_cm):
+def write_cell_lattice(maxmat, fido_per_cm, fm_attributes):
     ### This section pulls out the full material fine mesh per coarse mesh
     ### in fm_matl_per_cm
     fm_matl_per_cm = []
@@ -797,17 +816,17 @@ def write_reference_file(fm_matl_per_cm, cm_attributes):
     reference_fh.close()
 
 
-def write_surface_and_data(group_upper_boundaries):
+def write_surface_and_data(group_upper_boundaries, cm_attributes, instances):
 
-    groups = instances["maxgrp"].value
-    maxgcm = instances["maxgcm"].value
-    maxmat = instances["maxmat"].value
+    groups = instances['maxgrp']
+    maxgcm = instances['maxgcm']
+    maxmat = instances['maxmat']
 
     print("Printing surface card", file=log_fh)
     ### surface card
     print("", file=output_fh)
     print("c surface cards -----", file=output_fh)
-    rpp_list = produce_surface_rpp(cm_attributes)
+    rpp_list = produce_surface_rpp(cm_attributes, instances)
     for rpp in rpp_list:
             print(rpp, file=output_fh)
 
@@ -818,7 +837,7 @@ def write_surface_and_data(group_upper_boundaries):
     print("mode n", file=output_fh)
 
     # material cards
-    if not use_mcm:
+    if not args.mcm_use:
         print("c material cards", file=output_fh)
         for i in range(1, maxmat+1):
             print("m" + str(i) + "  " +
@@ -833,21 +852,21 @@ def write_surface_and_data(group_upper_boundaries):
             for line in mcm_fh:
                 print(line.rstrip(), file=output_fh)
 
-    if not suppress_fmesh:
+    if not args.suppress_fmesh:
         # fmesh tally cards : option added nov.14.2012
         if group_upper_boundaries is not None:  # check if list is non-empty
             group_upper_boundaries.reverse()
 
         for i in range(maxgcm):
-            xmin_by_cm = globals()['cm_attributes']['xMinCm']
-            ymin_by_cm = globals()['cm_attributes']['yMinCm']
-            zmin_by_cm = globals()['cm_attributes']['zMinCm']
-            xmax_by_cm = globals()['cm_attributes']['xMaxCm']
-            ymax_by_cm = globals()['cm_attributes']['yMaxCm']
-            zmax_by_cm = globals()['cm_attributes']['zMaxCm']
-            ixfl_by_cm = globals()['cm_attributes']['ixfL']
-            jyfl_by_cm = globals()['cm_attributes']['jyfL']
-            kzfl_by_cm = globals()['cm_attributes']['kzfL']
+            xmin_by_cm = cm_attributes['xMinCm']
+            ymin_by_cm = cm_attributes['yMinCm']
+            zmin_by_cm = cm_attributes['zMinCm']
+            xmax_by_cm = cm_attributes['xMaxCm']
+            ymax_by_cm = cm_attributes['yMaxCm']
+            zmax_by_cm = cm_attributes['zMaxCm']
+            ixfl_by_cm = cm_attributes['ixfL']
+            jyfl_by_cm = cm_attributes['jyfL']
+            kzfl_by_cm = cm_attributes['kzfL']
             # the actual printing for each fmesh
             print("fmesh" + str(i + 1)+"4:n  origin=", end="", file=output_fh)
             print(xmin_by_cm[i], ymin_by_cm[i], zmin_by_cm[i], file=output_fh)
@@ -864,7 +883,7 @@ def write_surface_and_data(group_upper_boundaries):
                 for i in range(groups):
                     print("? ", end="", file=output_fh)
                 print(" $ supply the",
-                      input_file.split('.')[0] +
+                      args.input_file.split('.')[0] +
                       ".grp file and the '?' will go away!",
                       end="", file=output_fh)
                 print(file=output_fh)
@@ -887,7 +906,7 @@ def write_surface_and_data(group_upper_boundaries):
         print("Suppressing fmesh tally from output", file=log_fh)
 
     # f4 tally cards by selected material
-    for i in construct_set_matl():
+    for i in construct_set_matl(instances):
         i = int(i)
         print("f"+str(i)+"4:n  " + str(i), end="\n", file=output_fh)
         if args.tallymul is not None:
@@ -902,7 +921,7 @@ def write_surface_and_data(group_upper_boundaries):
 
         #for m in range(1, maxmat+1):
         #    tally_string += " "+str(m)
-        tally_string += str(' '.join(list(construct_set_matl())))
+        tally_string += str(' '.join(list(construct_set_matl(instances))))
         tally_string += ") < "
 
         # SAVE
@@ -947,7 +966,7 @@ def insert_file(keyword):
             pass
 
 
-def insert_group_boundaries(file):
+def insert_group_boundaries(instances):
     """
     If the prb.grp file exists, read in the group information.
 
@@ -955,8 +974,8 @@ def insert_group_boundaries(file):
     """
 
     group_upper_boundaries = []
-    groups = instances["maxgrp"].value
-    file_str = file.split('.')
+    groups = instances['maxgrp']
+    file_str = args.input_file.split('.')
     basename = file_str[0]
     try:
         with open(basename+'.grp') as gfile:
@@ -1026,14 +1045,6 @@ def parse_args():
         sys.exit(1)
     args = parser.parse_args()
     # End of argument parsing
-    return args
-
-# main script begin
-if __name__ == "__main__":
-    args = parse_args()
-    instances = {}
-
-    header()
 
     # deal with argparse args
     if args.file is None:
@@ -1042,85 +1053,107 @@ if __name__ == "__main__":
     else:
         log_file = 'm2mc.log'
         if args.logprint:
-            log_fh = sys.stdout
+            args.log_fh = sys.stdout
             print("Logging to: stdout")
         else:
-            log_fh = open(log_file, 'w')
+            args.log_fh = open(log_file, 'w')
             print("Logging to: m2mc.log")
-        print("Working with PENTRAN Input File:", args.file, file=log_fh)
-        input_file = args.file
+        print("Working with PENTRAN Input File:", args.file, file=args.log_fh)
+        args.input_file = args.file
+
+        ### printing to output file
+        args.output_file = args.input_file.split('.')[0]+'.mc'
+        print("Assigning name of output as:",
+              args.output_file, file=args.log_fh)
+        args.output_fh = open(args.output_file, 'w')
 
         # handle mcm option
         if args.gmixmatl is not None:
-            use_mcm = True
-            mcm_file = args.gmixmatl
-            print("Applying GMIX .mcm File:", args.gmixmatl, file=log_fh)
+            args.mcm_use = True
+            args.mcm_file = args.gmixmatl
+            print("Applying GMIX .mcm File:", args.gmixmatl, file=args.log_fh)
         else:
-            use_mcm = False
+            args.mcm_use = False
 
         if args.nofmesh:
-            suppress_fmesh = True
+            args.suppress_fmesh = True
         else:
-            suppress_fmesh = False
+            args.suppress_fmesh = False  # noqa
 
-    input_fh = open(input_file, 'r')
-    output_file = input_file.split('.')[0]+'.mc'
-    print("Assigning name of output as:", output_file, file=log_fh)
+    return args
 
-    # GATHER INFORMATION
 
-    # initial search on fm, cm, geometry information in .pen file
-    for line in input_fh:
+def calc_mat_subvolumes(fm_matl_per_cm, cm_attributes):
 
-        # identify the maximum number of CM
-        cm_check(input_fh, line)
+    cm_vols = []
+    uniq_mats = []
+    uniq_vols = []
+    for mat_idx in range(len(cm_attributes['FMVol'])):
+        cm_vol = Decimal(0.)
+        fm_vols = []
+        for item in set(fm_matl_per_cm[mat_idx].split()):
+            fm_vol = Decimal(fm_matl_per_cm[mat_idx].count(item)) * \
+                cm_attributes['FMVol'][mat_idx]
+            cm_vol += fm_vol
+            fm_vols.append(float(fm_vol))
+        cm_vols.append(cm_vol)
+        uniq_vols.append(fm_vols)
+        uniq_mats.append(set(fm_matl_per_cm[mat_idx].split()))
 
-        # identify the maximum number of grps, materials
-        grp_matl_check(input_fh, line)
+    cm_attributes.update(dict(Vol=cm_vols))
+    cm_attributes.update(dict(Mat=uniq_mats))
+    cm_attributes.update(dict(SubVol=uniq_vols))
 
-        # examine BLOCK II section
-        if "BLOCK II(geometry)" in line:
-            print("Analyzing Geometry Block...", file=log_fh)
-            fido_per_cm = analyze_geometry_block(input_fh)
 
-        # identify boundary conditions
-        bdy_check(input_fh, line)
+def main(args):
 
+    global log_fh
+    global output_fh
+
+    instances = Instance(args.file)
+    log_fh = args.log_fh
+    output_fh = args.output_fh
+
+    print("Analyzing Geometry Block...", file=log_fh)
     print("\nPENTRAN Instances Summary", file=log_fh)
     print("-"*80, end="", file=log_fh)
 
+    instances.process()
+
     # catch for inconsistencies, analyze mcm for densities
-    if use_mcm:
+    if args.mcm_use:
         densities = analyze_mcm_for_density(mcm_file)
         try:
-            assert instances["maxmat"].value == len(densities)
+            assert instances["maxmat"] == len(densities)
         except:
             raise AssertionError("Mismatch between maxmat and #matls in mcm")
 
     pretty_print_instances(instances)
-    print_fido_string(fido_per_cm)
+    print_fido_string(instances.fido_per_cm)
 
-    fm_attributes = calc_fm_per_cm()
+    fm_attributes = calc_fm_per_cm(instances)
     cm_attributes = \
         calc_boundary_per_cm(fm_attributes['xFm'],
                              fm_attributes['yFm'],
-                             fm_attributes['zFm'])
+                             fm_attributes['zFm'], instances)
 
-    ### printing to output file
-    output_fh = open(output_file, 'w')
+    write_cell_card(instances)
+    fm_matl_per_cm = write_cell_lattice(
+        instances['maxmat'], instances['fido_per_cm'],
+        fm_attributes)
 
-    write_cell_card()
-    fm_matl_per_cm = write_cell_lattice(instances["maxmat"].value, fido_per_cm)
+    group_upper_boundaries = insert_group_boundaries(instances)
 
-    group_upper_boundaries = insert_group_boundaries(input_file)
-    write_surface_and_data(group_upper_boundaries)
+    write_surface_and_data(group_upper_boundaries, cm_attributes, instances)
     insert_file('sdef')
     insert_file('kcode')
 
     print("\nPhysical Dimension Summary", file=log_fh)
     print("-"*80, file=log_fh)
-    table_print('cm_attributes', 'xMinCm xMaxCm yMinCm yMaxCm zMinCm zMaxCm')
-    table_print('cm_attributes', 'xFmDimL yFmDimL zFmDimL ixfL jyfL kzfL')
+    table_print(instances, cm_attributes,
+                'xMinCm xMaxCm yMinCm yMaxCm zMinCm zMaxCm')
+    table_print(instances, cm_attributes,
+                'xFmDimL yFmDimL zFmDimL ixfL jyfL kzfL')
 
     # disable prb.ref for now
     # write_reference_file(fm_matl_per_cm, cm_attributes)
@@ -1128,9 +1161,9 @@ if __name__ == "__main__":
     def calc_fm_volumes():
         fm_volumes = []
         try:
-            assert instances["maxgcm"].value == len(cm_attributes['xFmDimL'])
-            assert instances["maxgcm"].value == len(cm_attributes['yFmDimL'])
-            assert instances["maxgcm"].value == len(cm_attributes['zFmDimL'])
+            assert instances['maxgcm'] == len(cm_attributes['xFmDimL'])
+            assert instances['maxgcm'] == len(cm_attributes['yFmDimL'])
+            assert instances['maxgcm'] == len(cm_attributes['zFmDimL'])
         except:
             raise AssertionError("Maxgcm and cm_attributes "
                                  "lengths are incompatible")
@@ -1141,26 +1174,18 @@ if __name__ == "__main__":
             fm_volumes.append(fm_volume)
         return fm_volumes
 
-    fm_volumes = calc_fm_volumes()
+    #fm_volumes = calc_fm_volumes()
+    cm_attributes.update(dict(FMVol=calc_fm_volumes()))
 
-    cm_vols = []
-    uniq_mats = []
-    uniq_vols = []
-    for mat_idx in range(instances["maxgcm"].value):
-        cm_vol = Decimal(0.)
-        fm_vols = []
-        for item in set(fm_matl_per_cm[mat_idx].split()):
-            fm_vol = Decimal(fm_matl_per_cm[mat_idx].count(item)) * \
-                fm_volumes[mat_idx]
-            cm_vol += fm_vol
-            fm_vols.append(float(fm_vol))
-        cm_vols.append(cm_vol)
-        uniq_vols.append(fm_vols)
-        uniq_mats.append(set(fm_matl_per_cm[mat_idx].split()))
+    calc_mat_subvolumes(fm_matl_per_cm, cm_attributes)
 
-    cm_attributes.update(dict(Vol=cm_vols))
-    cm_attributes.update(dict(Mat=uniq_mats))
-    cm_attributes.update(dict(SubVol=uniq_vols))
-    table_print('cm_attributes', 'Mat SubVol Vol', sub_vol_opt=True)
+    table_print(instances, cm_attributes, 'Mat SubVol Vol', sub_vol_opt=True)
 
     output_fh.close()
+    log_fh.close()
+
+# main script begin
+if __name__ == "__main__":
+    header()
+    args = parse_args()
+    main(args)
