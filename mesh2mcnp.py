@@ -608,7 +608,7 @@ def process_pfm_string(fido_string):
 
 
 # cell card production routines
-def produce_matl_cell(instances):
+def produce_matl_cell(instances, densities):
     maxmat = instances['maxmat']
     maxmat = int(maxmat)
     matlCell = []
@@ -667,8 +667,7 @@ def header():
     print(" ")
     print("                          MESH2MCNP")
     print("                         Version 2.1")
-    print("                         Version 2.0")
-    print("                   By  K. Manalo,  C. Yi")
+    print("                     By  K. Manalo,  C. Yi")
     print("                         &  G. Sjoden")
     print("                     Georgia Tech / CRITCEL")
     print("                          Feb   2014")
@@ -692,7 +691,7 @@ def print_fido_string(fido_per_cm):
             string = ""
 
 
-def write_cell_card(instances):
+def write_cell_card(instances, densities):
     print("Printing cell card", file=log_fh)
 
     print("c MESH2MCNP MCNP Input Generator, Date generated: ",
@@ -706,8 +705,8 @@ def write_cell_card(instances):
           "c   and matching universe (same as matid)\n" +
           "c   inside of the global rpp", file=output_fh)
     if args.mcm_use:
-        print("c Using densities parsed from " + mcm_file, file=output_fh)
-    matlCell = produce_matl_cell(instances)
+        print("c Using densities parsed from " + args.mcm_file, file=output_fh)
+    matlCell = produce_matl_cell(instances, densities)
     for cell in matlCell:
             print(cell, file=output_fh)
 
@@ -849,7 +848,7 @@ def write_surface_and_data(group_upper_boundaries, cm_attributes, instances):
     else:
         print("c Warning: MESH2MCNP does not check mcm material compatibility",
               file=output_fh)
-        with open(mcm_file, 'r') as mcm_fh:
+        with open(args.mcm_file, 'r') as mcm_fh:
             for line in mcm_fh:
                 print(line.rstrip(), file=output_fh)
 
@@ -1123,7 +1122,7 @@ def main(args):
 
     # catch for inconsistencies, analyze mcm for densities
     if args.mcm_use:
-        densities = analyze_mcm_for_density(mcm_file)
+        densities = analyze_mcm_for_density(args.mcm_file)
         try:
             assert instances["maxmat"] == len(densities)
         except:
@@ -1138,7 +1137,7 @@ def main(args):
                              fm_attributes['yFm'],
                              fm_attributes['zFm'], instances)
 
-    write_cell_card(instances)
+    write_cell_card(instances, densities)
     fm_matl_per_cm = write_cell_lattice(
         instances['maxmat'], instances['fido_per_cm'],
         fm_attributes)
